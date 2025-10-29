@@ -8,7 +8,7 @@ from aiogram import html
 
 from database.postgres import DB
 from utils.messages import get_text
-from utils.decorators import rate_limit_commands
+from utils.decorators import rate_limit_commands, rate_limit_callbacks
 from services import rate_limit
 from utils.models import MODELS
 from services.api_requests import openrouter
@@ -16,7 +16,6 @@ from utils.logger import logger
 from keyboards import keyboards
 
 router = Router()
-
 
 # === Commands ===
 
@@ -27,33 +26,43 @@ async def cmd_start(message: Message) -> None:
     text = get_text('start')
     await message.answer(text, parse_mode = ParseMode.HTML)
 
-@router.message(Command('help'))
+@router.message(Command('menu'))
 @rate_limit_commands()
-async def cmd_help(message: Message) -> None:
-    text = get_text('help')
-    await message.answer(text, parse_mode = ParseMode.HTML)
-
-@router.message(Command('models'))
-@rate_limit_commands()
-async def cmd_models(message: Message) -> None:
-    text = get_text('models')
-    await message.answer(text, parse_mode = ParseMode.HTML)
-
-@router.message(Command('change_model'))
-@rate_limit_commands()
-async def cmd_change_model(message: Message) -> None:
-    text = get_text('change_model')
-    await message.answer(text, reply_markup = keyboards.models_keyboard(), parse_mode = ParseMode.HTML)
+async def cmd_menu(message: Message) -> None:
+    text = get_text('menu')
+    await message.answer(text, reply_markup = keyboards.menu_keyboard(), parse_mode = ParseMode.HTML)
 
 # === callbacks ===
+@router.callback_query(F.data == 'help')
+@rate_limit_callbacks()
+async def callback_help(callback: CallbackQuery) -> None:
+    await callback.answer()
+    text = get_text('help')
+    await callback.message.answer(text, reply_markup = keyboards.menu_keyboard(), parse_mode = ParseMode.HTML)
+
+@router.callback_query(F.data == 'models')
+@rate_limit_callbacks()
+async def callback_models(callback: CallbackQuery) -> None:
+    await callback.answer()
+    text = get_text('models')
+    await callback.message.answer(text, reply_markup = keyboards.menu_keyboard(), parse_mode = ParseMode.HTML)
+
+@router.callback_query(F.data == 'change_model')
+@rate_limit_callbacks()
+async def callback_change_model(callback: CallbackQuery) -> None:
+    await callback.answer()
+    text = get_text('change_model')
+    await callback.message.edit_text(text, reply_markup = keyboards.models_keyboard(), parse_mode = ParseMode.HTML)
+
 @router.callback_query(F.data.startswith('model_'))
-async def callback_change_model(callback: CallbackQuery):
+@rate_limit_callbacks()
+async def callback_new_model(callback: CallbackQuery):
     await callback.answer()
     user_id = callback.from_user.id
     model = callback.data.split('_')[1]
     await DB.update_user_model(user_id, model)
     text = get_text('new_model', new_model = model)
-    await callback.message.edit_text(text, parse_mode = ParseMode.HTML)
+    await callback.message.edit_text(text, reply_markup = keyboards.menu_keyboard(), parse_mode = ParseMode.HTML)
 
 # === text ===
 @router.message(F.text)
