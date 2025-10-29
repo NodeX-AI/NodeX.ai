@@ -24,7 +24,6 @@ async def check_command_rate_limit(telegram_id: int, limit_seconds: int = 1) -> 
 
 async def check_rate_limit(telegram_id: int) -> int:
     key = f"rate_limit:{telegram_id}"
-    
     ttl = await redis_client.ttl(key)
     
     if ttl == -2:
@@ -32,15 +31,27 @@ async def check_rate_limit(telegram_id: int) -> int:
     
     return max(0, ttl)
 
-async def set_rate_limit(telegram_id: int, seconds: int = 10) -> None:
+async def set_rate_limit(telegram_id: int, limit_seconds: int = 10) -> None:
     key = f"rate_limit:{telegram_id}"
-    await redis_client.setex(key, seconds, 1)
+    await redis_client.setex(key, limit_seconds, 1)
 
 # ===
 
-async def set_processing_lock(telegram_id: int, timeout: int = 120) -> None:
+async def check_callback_rate_limit(telegram_id: int, limit_seconds: int = 1):
+    key = f"callback_rate_limit:{telegram_id}"
+    current = await redis_client.get(key)
+    
+    if current is not None:
+        return False
+    
+    await redis_client.setex(key, limit_seconds, 1)
+    return True
+
+# ===
+
+async def set_processing_lock(telegram_id: int, limit_seconds: int = 120) -> None:
     key = f"processing:{telegram_id}"
-    await redis_client.setex(key, timeout, 1)
+    await redis_client.setex(key, limit_seconds, 1)
 
 async def check_processing_lock(telegram_id: int) -> bool:
     key = f"processing:{telegram_id}"
