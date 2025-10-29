@@ -1,0 +1,5 @@
+.venv
+.env
+project.txt
+__pycache__
+nodex.log

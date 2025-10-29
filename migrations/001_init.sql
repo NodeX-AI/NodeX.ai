@@ -1,0 +1,14 @@
+CREATE TABLE users (
+    telegram_id BIGINT UNIQUE NOT NULL PRIMARY KEY,
+    current_model VARCHAR(50) DEFAULT 'gemma',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE messages (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+    message_text TEXT NOT NULL,
+    ai_response TEXT NOT NULL,
+    model_used VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
