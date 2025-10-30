@@ -18,6 +18,11 @@ class PostgresDB:
     async def get_user(self, telegram_id: int) -> Optional[asyncpg.Record]: #
         async with self.pool.acquire() as conn:
             return await conn.fetchrow("SELECT * FROM users WHERE telegram_id = $1", telegram_id)
+        
+    async def user_exists(self, telegram_id: int) -> bool:
+        async with self.pool.acquire() as conn:
+            result = await conn.fetchval("SELECT EXISTS(SELECT 1 FROM users WHERE telegram_id = $1)", telegram_id)
+            return result
     
     async def update_user_model(self, telegram_id: int, new_model: str) -> None: #
         async with self.pool.acquire() as conn:

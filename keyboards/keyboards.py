@@ -32,7 +32,7 @@ def delete_messages_keyboard() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 def delete_account_keyboard() -> InlineKeyboardMarkup:
-    builder = InlineKeyboardBuilder
+    builder = InlineKeyboardBuilder()
     builder.button(text = 'Да, 100%', callback_data = 'sure_delete_account')
     builder.button(text = 'Нет, я передумал', callback_data = 'back_to_menu')
     builder.button(text = '⬅️ Назад', callback_data = 'back_to_menu')

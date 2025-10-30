@@ -7,6 +7,8 @@ from utils.logger import logger
 
 from database.postgres import DB
 from services.rate_limit import init_redis
+from middleware.registration_middleware import RegistrationMiddleware
+from middleware.error_logging_middleware import ErrorLoggingMiddleware
 
 bot = Bot(config.BOT_TOKEN)
 dp = Dispatcher()
@@ -17,6 +19,15 @@ async def main():
 
     await init_redis()
     logger.info('[*] Подключение к Redis...')
+
+    logger.info('[*] Подключение Middleware...')
+    dp.update.outer_middleware(ErrorLoggingMiddleware())
+    dp.callback_query.outer_middleware(ErrorLoggingMiddleware())
+    dp.edited_message.outer_middleware(ErrorLoggingMiddleware())
+    dp.message.outer_middleware(ErrorLoggingMiddleware())
+    
+    dp.message.middleware(RegistrationMiddleware())
+    dp.callback_query.middleware(RegistrationMiddleware())
 
     logger.info('[*] Запуск бота...')
     dp.include_router(router)
