@@ -1,5 +1,6 @@
 import asyncpg
 from typing import Optional, List, Tuple
+from services.encryption import encryptor
 
 from config.config import PG_URL
 
@@ -36,19 +37,37 @@ class PostgresDB:
     # === MESSAGE METHODS ===
     async def add_message(self, user_id: int, message_text: str, ai_response: str, model_used: str) -> int: #
         async with self.pool.acquire() as conn:
-            return await conn.fetchval( "INSERT INTO messages (user_id, message_text, ai_response, model_used) VALUES ($1, $2, $3, $4) RETURNING id",
-                                       user_id, message_text, ai_response, model_used)
+            encrypted_message = encryptor.encrypt(message_text)
+            encrypted_response = encryptor.encrypt(ai_response)
+            return await conn.fetchval("INSERT INTO messages (user_id, message_text, ai_response, model_used) VALUES ($1, $2, $3, $4) RETURNING id",
+                                       user_id, encrypted_message, encrypted_response, model_used)
     
     async def get_user_messages(self, telegram_id: int, limit: int = 10) -> List[asyncpg.Record]:
         async with self.pool.acquire() as conn:
-            return await conn.fetch("SELECT m.message_text, m.ai_response, m.model_used, m.created_at FROM messages m JOIN users u ON m.user_id = u.telegram_id WHERE u.telegram_id = $1 ORDER BY m.created_at DESC LIMIT $2",
+            rows = await conn.fetch("SELECT m.message_text, m.ai_response, m.model_used, m.created_at FROM messages m JOIN users u ON m.user_id = u.telegram_id WHERE u.telegram_id = $1 ORDER BY m.created_at DESC LIMIT $2",
                                     telegram_id, limit) # DESC - sort in descending order
+            decrypted_rows = []
+            for row in rows:
+                decrypted_row = {
+                    'message_text': encryptor.decrypt(row['message_text']),
+                    'ai_response': encryptor.decrypt(row['ai_response']),
+                    'model_used': row['model_used'],
+                    'created_at': row['created_at']
+                }
+            decrypted_rows.append(decrypted_row)
+        
+            return decrypted_rows
+        
     
     async def get_user_recent_messages(self, telegram_id: int, model: str,limit: int = 10) -> List[Tuple[str, str]]: #
         async with self.pool.acquire() as conn:
             rows = await conn.fetch("SELECT message_text, ai_response FROM messages WHERE user_id = $1 AND model_used = $2 ORDER BY created_at ASC LIMIT $3",
                                     telegram_id, model, limit) # ASC - sort in ascending order
-            return [(row['message_text'], row['ai_response']) for row in rows]
+            return [
+                (encryptor.decrypt(row['message_text']), 
+                encryptor.decrypt(row['ai_response']))
+                for row in rows
+            ]
 
     async def get_user_message_count(self, telegram_id: int) -> int: #
         async with self.pool.acquire() as conn:
