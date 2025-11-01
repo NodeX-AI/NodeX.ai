@@ -73,19 +73,19 @@ class OpenRouterService:
                         return data['choices'][0]['message']['content']
                     else:
                         error_text = await response.text()
-                        logger.error(f'Ошибка API | Модель: {model} | Статус и ошибка: {response.status} - {error_text}')
+                        logger.error(f'[!] Ошибка API | Модель: {model} | Статус и ошибка: {response.status} - {error_text}')
                         error = get_error('api_err')
                         return error
                         
             except aiohttp.ClientError as e:
-                logger.error(f'Ошибка сети: ({model}): {e}')
+                logger.error(f'[!] Ошибка сети: ({model}): {e}')
                 return f'❌ Ошибка сети'
             except asyncio.TimeoutError:
-                logger.warning('Таймаут: ({model})')
+                logger.warning('[-] Таймаут: ({model})')
                 error = get_error('timeout')
                 return error
             except Exception as e:
-                logger.error('Непредвиденная ошибка: {e} | Модель: {model}')
+                logger.error('[!] Непредвиденная ошибка: {e} | Модель: {model}')
                 error = get_error('unexpected')
                 return error
 

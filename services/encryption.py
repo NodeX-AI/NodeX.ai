@@ -26,7 +26,7 @@ class MessageEncryptor:
             encrypted = self.aesgcm.encrypt(nonce, plaintext.encode(), None)
             return base64.urlsafe_b64encode(nonce + encrypted).decode()
         except Exception as e:
-            logger.error(f"❌ Ошибка шифрования: {e}")
+            logger.error(f"[!] Ошибка шифрования: {e}")
             return plaintext
     
     def decrypt(self, encrypted_text: str) -> str:
@@ -36,7 +36,7 @@ class MessageEncryptor:
             decrypted = self.aesgcm.decrypt(nonce, encrypted, None)
             return decrypted.decode()
         except Exception as e:
-            logger.error(f"❌ Ошибка расшифровки: {e}")
+            logger.error(f"[!] Ошибка расшифровки: {e}")
             return "Не удалось расшифровать"
 
 encryptor = MessageEncryptor()

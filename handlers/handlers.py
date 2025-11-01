@@ -3,14 +3,12 @@ from aiogram.types import Message, CallbackQuery
 from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.enums import ChatAction
-from aiogram import html
-
 
 from database.postgres import DB
-from utils.messages import get_text, get_warn
+from utils.messages import get_text, get_warn, get_error
 from utils.decorators import rate_limit_commands, rate_limit_callbacks
 from services import rate_limit
-from utils.models import MODELS
+from utils.models import MODELS, get_model_display_name
 from services.api_requests import openrouter
 from utils.logger import logger
 from keyboards import keyboards
@@ -40,6 +38,20 @@ async def callback_help(callback: CallbackQuery) -> None:
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
     await callback.answer()
 
+@router.callback_query(F.data == 'info')
+@rate_limit_callbacks()
+async def callback_info(callback: CallbackQuery) -> None:
+    text = get_text('info')
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data == 'faq')
+@rate_limit_callbacks()
+async def callback_faq(callback: CallbackQuery) -> None:
+    text = get_text('faq')
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
 @router.callback_query(F.data == 'models')
 @rate_limit_callbacks()
 async def callback_models(callback: CallbackQuery) -> None:
@@ -58,8 +70,9 @@ async def callback_change_model(callback: CallbackQuery) -> None:
 @rate_limit_callbacks()
 async def callback_new_model(callback: CallbackQuery) -> None:
     user_id = callback.from_user.id
-    model = callback.data.split('_')[1]
-    await DB.update_user_model(user_id, model)
+    model_alias = callback.data.split('_')[1]
+    await DB.update_user_model(user_id, model_alias)
+    model = get_model_display_name(model_alias)
     text = get_text('new_model', new_model = model)
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
     await callback.answer()
@@ -70,7 +83,8 @@ async def callback_my_profile(callback: CallbackQuery) -> None:
     user_id = callback.from_user.id
 
     user_record = await DB.get_user(user_id)
-    current_model = user_record['current_model']
+    current_model_alias = user_record['current_model']
+    current_model = get_model_display_name(current_model_alias)
     created_at = user_record['created_at']
     created_str = created_at.strftime("%d.%m.%Y %H:%M")
     message_count = await DB.get_user_message_count(user_id)
@@ -84,7 +98,8 @@ async def callback_statistics(callback: CallbackQuery) -> None:
     statistics = await DB.get_global_stats()
     total_users = statistics['total_users']
     total_messages = statistics['total_messages']
-    popular_model = statistics['popular_model']
+    popular_model_alias = statistics['popular_model']
+    popular_model = get_model_display_name(popular_model_alias)
     text = get_text('statistics', total_users = total_users, total_messages = total_messages, popular_model = popular_model)
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
     await callback.answer()
@@ -109,10 +124,10 @@ async def callback_delete(callback: CallbackQuery) -> None:
     delete = callback.data.split('_')[1]
     try:
         if delete == 'messages':
-            text = get_text('delete', delete = 'сообщения')
+            text = get_text('delete', delete = 'историю сообщений')
             await callback.message.edit_text(text, reply_markup = keyboards.delete_messages_keyboard(), parse_mode = ParseMode.HTML)
         else:
-            text = get_text('delete', delete = 'аккаунт')
+            text = get_text('delete', delete = 'историю сообщений и аккаунт')
             await callback.message.edit_text(text, reply_markup = keyboards.delete_account_keyboard(), parse_mode = ParseMode.HTML)
     finally:
         await callback.answer()
@@ -173,14 +188,13 @@ async def handle_message(message: Message):
         response = await openrouter.generate_response(message.text, model, context)
 
         await DB.add_message(user_id, message.text, response, model_used=model_alias)
-        escaped_response = html.quote(response)
-        await message.answer(escaped_response, parse_mode = ParseMode.HTML)
-
+        await message.answer(response)
 
         await rate_limit.set_rate_limit(user_id)
     except Exception as e:
         logger.error(f'Ошибка: {e}')
-        await message.answer(e)
+        text = get_error('error_in_handler')
+        await message.answer(text)
     finally:
         await rate_limit.remove_processing_lock(user_id)
 

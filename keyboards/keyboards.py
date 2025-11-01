@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardMarkup
 
 def models_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.button(text = 'Google: Gemma-3', callback_data = 'model_gemma')
+    builder.button(text = 'Gemma 3', callback_data = 'model_gemma')
     builder.button(text = 'DeepSeek R1T2 Chimera', callback_data = 'model_deepseek')
     builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
     builder.adjust(2)
@@ -47,5 +47,7 @@ def menu_keyboard() -> InlineKeyboardMarkup:
     builder.button(text = '👤 Мой профиль', callback_data = 'my_profile')
     builder.button(text = '📊 Статистика', callback_data = 'statistics')
     builder.button(text = '⚠️ Опасная зона', callback_data = 'danger_zone')
+    builder.button(text = '📕 Информация о проекте', callback_data = 'info')
+    builder.button(text = '❓ ЧаВо', callback_data = 'faq')
     builder.adjust(2)
     return builder.as_markup()
