@@ -31,12 +31,6 @@ async def cmd_menu(message: Message) -> None:
     await message.answer(text, reply_markup = keyboards.menu_keyboard(), parse_mode = ParseMode.HTML)
 
 # === callbacks ===
-@router.callback_query(F.data == 'help')
-@rate_limit_callbacks()
-async def callback_help(callback: CallbackQuery) -> None:
-    text = get_text('help')
-    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
-    await callback.answer()
 
 @router.callback_query(F.data == 'info')
 @rate_limit_callbacks()
@@ -194,7 +188,7 @@ async def handle_message(message: Message):
     except Exception as e:
         logger.error(f'Ошибка: {e}')
         text = get_error('error_in_handler')
-        await message.answer(text)
+        await message.answer(text, parse_mode = ParseMode.HTML)
     finally:
         await rate_limit.remove_processing_lock(user_id)
 
