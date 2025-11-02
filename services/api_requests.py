@@ -1,7 +1,7 @@
 import aiohttp
 import asyncio
 
-from config.config import GEMMA3_TOKEN, DEEPSEEK_TOKEN, GEMMA3_BASE_URL, DEEPSEEK_BASE_URL
+from config.config import *
 from utils.logger import logger
 from utils.messages import get_error
 
@@ -9,8 +9,13 @@ class OpenRouterService:
     def __init__(self):
         self.gemma3_key = GEMMA3_TOKEN
         self.deepseek_key = DEEPSEEK_TOKEN
+        self.minimax_key = MINIMAX_TOKEN
+        self.nemotron_key = NEMOTRON_TOKEN
+
         self.gemma3_base_url = GEMMA3_BASE_URL
         self.deepseek_base_url = DEEPSEEK_BASE_URL
+        self.minimax_base_url = MINIMAX_M2_BASE_URL
+        self.nemotron_base_url = NEMOTRON_BASE_URL
 
         self.headers_gemma3 = {
             'Authorization': f'Bearer {self.gemma3_key}',
@@ -19,6 +24,16 @@ class OpenRouterService:
         
         self.headers_deepseek = {
             'Authorization': f'Bearer {self.deepseek_key}',
+            'Content-Type': 'application/json'
+        }
+
+        self.headers_minimax = {
+            'Authorization': f'Bearer {self.minimax_key}',
+            'Content-Type': 'application/json'
+        }
+
+        self.headers_nemotron = {
+            'Authorization': f'Bearer {self.nemotron_key}',
             'Content-Type': 'application/json'
         }
     
@@ -32,6 +47,16 @@ class OpenRouterService:
             return {
                 "base_url": self.deepseek_base_url, 
                 "headers": self.headers_deepseek
+            }
+        elif "minimax" in model.lower():
+            return {
+                "base_url": self.minimax_base_url,
+                "headers": self.headers_minimax
+            }
+        elif "nemotron" in model.lower():
+            return {
+                "base_url": self.nemotron_base_url,
+                "headers": self.headers_nemotron
             }
         else:
             return {
