@@ -3,6 +3,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.enums import ChatAction
+import asyncio
 
 from database.postgres import DB
 from utils.messages import get_text, get_warn, get_error
@@ -178,7 +179,13 @@ async def handle_message(message: Message):
         response = await openrouter.generate_response(message.text, model, context)
 
         await DB.add_message(user_id, message.text, response, model_used=model_alias)
-        await message.answer(response)
+        if len(response) > 4096:
+            chunks = [response[i:i+4096] for i in range(0, len(response), 4096)]
+            for chunk in chunks:
+                await message.answer(chunk)
+                await asyncio.sleep(1) # "умная отправка", если сообщение длинное = разбиваем его на куски и отправляем по частям
+        else:
+            await message.answer(response)
 
         await rate_limit.set_rate_limit(user_id)
     except Exception as e:
