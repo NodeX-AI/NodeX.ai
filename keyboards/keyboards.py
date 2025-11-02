@@ -5,6 +5,8 @@ def models_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(text = 'Gemma 3', callback_data = 'model_gemma')
     builder.button(text = 'DeepSeek R1T2 Chimera', callback_data = 'model_deepseek')
+    builder.button(text = 'MiniMax M2', callback_data = 'model_minimax')
+    builder.button(text = 'Nemotron Nano 9B V2', callback_data = 'model_nemotron')
     builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
     builder.adjust(2)
     return builder.as_markup()

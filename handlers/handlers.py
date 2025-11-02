@@ -170,10 +170,6 @@ async def handle_message(message: Message):
         await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
 
         user = await DB.get_user(user_id)
-        if user == None:
-            text = get_warn('not_registered')
-            await message.answer(text, parse_mode = ParseMode.HTML)
-            return
         model_alias = user['current_model'] # We get the model alias from the database
         model = MODELS[model_alias] # convert the alias to a real name
 
