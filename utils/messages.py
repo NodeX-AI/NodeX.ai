@@ -23,7 +23,7 @@ MESSAGES = {
 WARNINGS = {
     'ru' : {
         # middleware/registration_middleware.py
-        'not_registered' : 'Вы не зарегистрированы. Зарегистрируйтесь, используя /start',
+        'not_registered' : 'Вы не зарегистрированы. Зарегистрируйтесь, используя команду /start',
     }
 }
 
