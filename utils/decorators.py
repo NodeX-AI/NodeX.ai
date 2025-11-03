@@ -28,6 +28,7 @@ def rate_limit_callbacks(limit_seconds: int = 1):
             if not await check_callback_rate_limit(callback.from_user.id, limit_seconds):
                 text = get_text('callback_rate_limit')
                 await callback.message.answer(text, parse_mode = ParseMode.HTML)
+                await callback.answer()
                 return
             return await func(callback, *args, **kwargs)
         return wrapper
