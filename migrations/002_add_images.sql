@@ -1,0 +1,11 @@
+ALTER TABLE users 
+ADD COLUMN image_model VARCHAR(50) DEFAULT 'gemma';
+
+CREATE TABLE images (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+    image_url TEXT NOT NULL,
+    ai_response TEXT NOT NULL,
+    model_used VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
