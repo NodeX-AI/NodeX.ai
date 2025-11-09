@@ -245,7 +245,8 @@ async def handle_image(message: Message) -> None:
 
         # скачиваем фото
         file = await message.bot.get_file(file_id)
-        file_bytes = await message.bot.download_file(file.file_path)
+        file_bytes_io = await message.bot.download_file(file.file_path)
+        file_bytes = file_bytes_io.getvalue()
 
         # загружаем изображение на хост
         image_url = await upload(file_bytes)
