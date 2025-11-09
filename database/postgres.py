@@ -25,14 +25,34 @@ class PostgresDB:
             result = await conn.fetchval("SELECT EXISTS(SELECT 1 FROM users WHERE telegram_id = $1)", telegram_id)
             return result
     
-    async def update_user_model(self, telegram_id: int, new_model: str) -> None: #
+    async def update_user_text_model(self, telegram_id: int, new_model: str) -> None: #
         async with self.pool.acquire() as conn:
             await conn.execute("UPDATE users SET current_model = $1 WHERE telegram_id = $2", new_model, telegram_id)
+        
+    async def update_user_image_model(self, telegram_id: int, new_model: str) -> None:
+        async with self.pool.acquire() as conn:
+            await conn.execute("UPDATE users SET image_model = $1 WHERE telegram_id = $2", new_model, telegram_id)
+    
+    ###
     
     async def get_user_model(self, telegram_id: int) -> Optional[str]: #
         async with self.pool.acquire() as conn:
             return await conn.fetchval("SELECT current_model FROM users WHERE telegram_id = $1", telegram_id)
         
+    # === IMAGE METHODS ===
+    async def add_image(self, user_id: int, image_url: str, ai_response: str, model_used: str) -> int:
+        async with self.pool.acquire() as conn:
+            return await conn.fetchval("INSERT INTO images (user_id, image_url, ai_response, model_used) VALUES ($1, $2, $3, $4) RETURNING id",
+                                       user_id, image_url, ai_response, model_used)
+    
+
+    async def get_user_recent_images(self, telegram_id: int, model: str, limit: int = 10) -> List[Tuple[str, str]]: #
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch("SELECT image_url, ai_response FROM images WHERE user_id = $1 AND model_used = $2 ORDER BY created_at ASC LIMIT $3",
+                                    telegram_id, model, limit) # ASC - sort in ascending order
+            return [(row['image_url'], row['ai_response']) for row in rows]
+
+
     
     # === MESSAGE METHODS ===
     async def add_message(self, user_id: int, message_text: str, ai_response: str, model_used: str) -> int: #

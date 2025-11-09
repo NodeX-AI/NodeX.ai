@@ -55,19 +55,37 @@ async def callback_models(callback: CallbackQuery) -> None:
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
     await callback.answer()
 
-@router.callback_query(F.data == 'change_model')
+@router.callback_query(F.data == 'change_image_model')
 @rate_limit_callbacks()
-async def callback_change_model(callback: CallbackQuery) -> None:
+async def callback_change_image_model(callback: CallbackQuery) -> None:
     text = get_text('change_model')
-    await callback.message.edit_text(text, reply_markup = keyboards.models_keyboard(), parse_mode = ParseMode.HTML)
+    await callback.message.edit_text(text, reply_markup = keyboards.image_models_keyboard(), parse_mode = ParseMode.HTML)
     await callback.answer()
 
-@router.callback_query(F.data.startswith('model_'))
+@router.callback_query(F.data == 'change_text_model')
 @rate_limit_callbacks()
-async def callback_new_model(callback: CallbackQuery) -> None:
+async def callback_change_text_model(callback: CallbackQuery) -> None:
+    text = get_text('change_model')
+    await callback.message.edit_text(text, reply_markup = keyboards.text_models_keyboard(), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data.startswith('image_model_'))
+@rate_limit_callbacks()
+async def callback_new_image_model(callback: CallbackQuery) -> None:
     user_id = callback.from_user.id
-    model_alias = callback.data.split('_')[1]
-    await DB.update_user_model(user_id, model_alias)
+    model_alias = callback.data.split('_')[2]
+    await DB.update_user_image_model(user_id, model_alias)
+    model = get_model_display_name(model_alias)
+    text = get_text('new_model', new_model = model)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data.startswith('text_model_'))
+@rate_limit_callbacks()
+async def callback_new_text_model(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    model_alias = callback.data.split('_')[2]
+    await DB.update_user_text_model(user_id, model_alias)
     model = get_model_display_name(model_alias)
     text = get_text('new_model', new_model = model)
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)

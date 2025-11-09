@@ -1,12 +1,19 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup
 
-def models_keyboard() -> InlineKeyboardMarkup:
+def image_models_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.button(text = 'Gemma 3', callback_data = 'model_gemma')
-    builder.button(text = 'DeepSeek R1T2 Chimera', callback_data = 'model_deepseek')
-    builder.button(text = 'MiniMax M2', callback_data = 'model_minimax')
-    builder.button(text = 'Nemotron Nano 9B V2', callback_data = 'model_nemotron')
+    builder.button(text = 'Gemma 3', callback_data = 'image_model_gemma')
+    builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
+    builder.adjust(1)
+    return builder.as_markup()
+
+def text_models_keyboard() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.button(text = 'Gemma 3', callback_data = 'text_model_gemma')
+    builder.button(text = 'DeepSeek R1T2 Chimera', callback_data = 'text_model_deepseek')
+    builder.button(text = 'MiniMax M2', callback_data = 'text_model_minimax')
+    builder.button(text = 'Nemotron Nano 9B V2', callback_data = 'text_model_nemotron')
     builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
     builder.adjust(2)
     return builder.as_markup()
@@ -44,7 +51,8 @@ def delete_account_keyboard() -> InlineKeyboardMarkup:
 def menu_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(text = '🤖 Доступные модели', callback_data = 'models')
-    builder.button(text = '🔄 Изменить модель', callback_data = 'change_model')
+    builder.button(text = '🔄 Изменить текстовую модель', callback_data = 'change_text_model')
+    builder.button(text = '🔄 Изменить модель для распознавания изображений', callback_data = 'change_image_model')
     builder.button(text = '👤 Мой профиль', callback_data = 'my_profile')
     builder.button(text = '📊 Статистика', callback_data = 'statistics')
     builder.button(text = '⚠️ Опасная зона', callback_data = 'danger_zone')
