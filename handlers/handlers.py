@@ -14,6 +14,7 @@ from utils.models import MODELS, get_model_display_name
 from services.api_requests import openrouter
 from utils.logger import logger
 from keyboards import keyboards
+from services.image_hosting import upload
 
 router = Router()
 
@@ -215,3 +216,66 @@ async def handle_message(message: Message):
     finally:
         await rate_limit.remove_processing_lock(user_id)
 
+# === image ===
+@router.message(F.photo)
+async def handle_image(message: Message) -> None:
+    user_id = message.from_user.id
+    remaining_time = await rate_limit.check_rate_limit(user_id)
+
+    if remaining_time > 0:
+        text = get_text('remaining_time', remaining_time = remaining_time)
+        await message.answer(text, parse_mode = ParseMode.HTML)
+        return
+    
+    if await rate_limit.check_processing_lock(user_id):
+        text = get_text('request_processing')
+        await message.answer(text, parse_mode = ParseMode.HTML)
+        return
+    
+    try:
+        await rate_limit.set_processing_lock(user_id)
+        await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
+
+        model_alias = await DB.get_user_image_model(user_id)
+        model = MODELS[model_alias]
+
+        # получаем фото
+        image = message.photo[-1]
+        file_id = image.file_id
+
+        # скачиваем фото
+        file = await message.bot.get_file(file_id)
+        file_bytes = await message.bot.download_file(file.file_path)
+
+        # загружаем изображение на хост
+        image_url = await upload(file_bytes)
+
+        if not image_url:
+            text = get_error('error_image_host')
+            await message.answer(text, parse_mode = ParseMode.HTML)
+            return
+        
+        response = await openrouter.generate_response_from_image(image_url, model)
+        cleaned_response = cleaner.clean(response)
+        if len(cleaned_response) == 0:
+            text = get_text('empty_message')
+            await message.answer(text)
+            return
+
+        if len(cleaned_response) > 4096:
+            chunks = [cleaned_response[i:i+4096] for i in range(0, len(cleaned_response), 4096)]
+            for chunk in chunks:
+                await message.answer(chunk)
+                await asyncio.sleep(1)
+        else:
+            await message.answer(cleaned_response)
+
+        await rate_limit.set_rate_limit(user_id)
+    except Exception as e:
+        logger.error(f'Ошибка обработки фото: {e}')
+        text = get_error('error_in_handler')
+        await message.answer(text, parse_mode = ParseMode.HTML)
+    finally:
+        await rate_limit.remove_processing_lock(user_id)
+        if 'file_bytes' in locals():
+            del file_bytes
