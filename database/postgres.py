@@ -25,14 +25,21 @@ class PostgresDB:
             result = await conn.fetchval("SELECT EXISTS(SELECT 1 FROM users WHERE telegram_id = $1)", telegram_id)
             return result
     
-    async def update_user_model(self, telegram_id: int, new_model: str) -> None: #
+    async def update_user_text_model(self, telegram_id: int, new_model: str) -> None: #
         async with self.pool.acquire() as conn:
             await conn.execute("UPDATE users SET current_model = $1 WHERE telegram_id = $2", new_model, telegram_id)
+        
+    async def update_user_image_model(self, telegram_id: int, new_model: str) -> None:
+        async with self.pool.acquire() as conn:
+            await conn.execute("UPDATE users SET image_model = $1 WHERE telegram_id = $2", new_model, telegram_id)
     
     async def get_user_model(self, telegram_id: int) -> Optional[str]: #
         async with self.pool.acquire() as conn:
             return await conn.fetchval("SELECT current_model FROM users WHERE telegram_id = $1", telegram_id)
-        
+    
+    async def get_user_image_model(self, telegram_id: int) -> Optional[str]:
+        async with self.pool.acquire() as conn:
+            return await conn.fetchval("SELECT image_model FROM users WHERE telegram_id = $1", telegram_id)
     
     # === MESSAGE METHODS ===
     async def add_message(self, user_id: int, message_text: str, ai_response: str, model_used: str) -> int: #

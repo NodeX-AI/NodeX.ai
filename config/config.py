@@ -8,11 +8,16 @@ BOT_TOKEN = os.getenv('BOT_API_TOKEN')
 PG_URL = os.getenv('PG_URL')
 REDIS_URL = os.getenv('REDIS_URL')
 
+IMAGE_HOSTING_KEY = os.getenv('IMAGE_HOSTING_KEY')
+IMAGE_HOSTING_URL = os.getenv('IMAGE_HOSTING_URL')
+
 
 GEMMA3_TOKEN = os.getenv('GEMMA3')
 DEEPSEEK_TOKEN = os.getenv('DEEPSEEK')
 MINIMAX_TOKEN = os.getenv('MINIMAX')
 NEMOTRON_TOKEN = os.getenv('NEMOTRON')
+
+GEMMA3_IMAGES_TOKEN = os.getenv('GEMMA3_IMAGES')
 
 
 GEMMA3_BASE_URL = os.getenv('GEMMA3_BASE_URL')
