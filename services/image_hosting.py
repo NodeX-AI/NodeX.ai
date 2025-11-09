@@ -10,11 +10,10 @@ async def upload(file_bytes: bytes) -> Optional[str]:
     try:
         url = IMAGE_HOSTING_URL
         
-        # ПРЕОБРАЗУЕМ BytesIO В bytes
         if hasattr(file_bytes, 'getvalue'):
-            file_data = file_bytes.getvalue()  # если это BytesIO
+            file_data = file_bytes.getvalue()
         else:
-            file_data = file_bytes  # если уже bytes
+            file_data = file_bytes
         
         boundary = '----WebKitFormBoundary' + ''.join(random.choices(string.ascii_letters + string.digits, k=16))
         
@@ -22,7 +21,7 @@ async def upload(file_bytes: bytes) -> Optional[str]:
             f'--{boundary}\r\n'
             f'Content-Disposition: form-data; name="source"; filename="image.jpg"\r\n'
             f'Content-Type: image/jpeg\r\n\r\n'
-        ).encode() + file_data + (  # ← ИСПОЛЬЗУЕМ file_data вместо file_bytes
+        ).encode() + file_data + (
             f'\r\n--{boundary}\r\n'
             f'Content-Disposition: form-data; name="key"\r\n\r\n{IMAGE_HOSTING_KEY}\r\n'
             f'--{boundary}\r\n'
