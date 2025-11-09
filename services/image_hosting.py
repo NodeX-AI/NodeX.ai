@@ -12,7 +12,7 @@ async def upload(file_bytes: bytes) -> Optional[str]:
     data.add_field(
         'source',
         file_bytes,
-        filename=f'{uuid.uuid4()}.jpg',
+        filename=f'{str(uuid.uuid4())}.jpg',
         content_type='image/jpeg'
     )
     data.add_field('key', IMAGE_HOSTING_KEY)
