@@ -1,6 +1,5 @@
 import aiohttp
 import asyncio
-import uuid
 from typing import Optional
 from config.config import *
 from utils.logger import logger
@@ -12,7 +11,7 @@ async def upload(file_bytes: bytes) -> Optional[str]:
     data.add_field(
         'source',
         file_bytes,
-        filename=f'{str(uuid.uuid4())}.jpg',
+        filename=f'image.jpg',
         content_type='image/jpeg'
     )
     data.add_field('key', IMAGE_HOSTING_KEY)
