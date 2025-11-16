@@ -2,6 +2,8 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+load_dotenv('/etc/environment')
+
 BOT_TOKEN = os.getenv('BOT_API_TOKEN')
 
 
