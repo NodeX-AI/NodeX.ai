@@ -256,7 +256,11 @@ async def handle_image(message: Message) -> None:
             await message.answer(text, parse_mode = ParseMode.HTML)
             return
         
-        response = await openrouter.generate_response_from_image(image_url, model)
+        prompt = message.caption
+        if not prompt or prompt.strip() == '':
+            prompt = 'Опиши изображение'
+        
+        response = await openrouter.generate_response_from_image(image_url, model, prompt)
         cleaned_response = cleaner.clean(response)
         if len(cleaned_response) == 0:
             text = get_text('empty_message')

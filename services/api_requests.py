@@ -151,7 +151,7 @@ class OpenRouterService:
                 error = get_error('unexpected')
                 return error
             
-    async def generate_response_from_image(self, url: str, model: str, context: list = None) -> str:
+    async def generate_response_from_image(self, url: str, model: str, prompt: str) -> str:
         model_config = self._get_image_model_config(model)
         
         messages = [{
@@ -159,7 +159,7 @@ class OpenRouterService:
             "content": [
                 {
                     "type": "text",
-                    "text": "Опиши изображение."
+                    "text": prompt
                 },
                 {
                     "type": "image_url",
