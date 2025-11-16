@@ -5,6 +5,49 @@ from config.config import *
 from utils.logger import logger
 from utils.messages import get_error
 
+class Grok4_fast:
+    def __init__(self):
+        self.key = GROK4_FAST_TOKEN
+        self.id = GROK4_FAST_ID
+        self.url = GROK4_FAST_BASE_URL
+        self.headers_grok4fast = {
+            "content-type": "application/json",
+            "authorization": f"Bearer {self.key}"
+        }
+    async def generate_response(self, message: str, parent_message_id: str) -> list[str]:
+        payload = {
+            "message" : message,
+            "parentMessageId" : parent_message_id if parent_message_id else ""
+        } # url/<agent_id>/call
+        url = f'{self.url}{self.id}/call'
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.post(
+                    url,
+                    json=payload,
+                    headers=self.headers_grok4fast,
+                    timeout = 120
+                ) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return [data['message'], data['response_id']]
+                    else:
+                        error_text = await response.text()
+                        logger.error(f'[!] Ошибка API | Модель: Grok-4-fast | Статус и ошибка: {response.status} - {error_text}')
+                        error = get_error('api_err')
+                        return error
+            except aiohttp.ClientError as e:
+                logger.error(f'[!] Ошибка сети: Grok-4-fast: {e}')
+                return f'❌ Ошибка сети'
+            except asyncio.TimeoutError:
+                logger.warning('[-] Таймаут: ({model})')
+                error = get_error('timeout')
+                return error
+            except Exception as e:
+                logger.error('[!] Непредвиденная ошибка: {e} | Модель: {model}')
+                error = get_error('unexpected')
+                return error
+
 class OpenRouterService:
     def __init__(self):
         self.gemma3_key = GEMMA3_TOKEN
@@ -208,3 +251,4 @@ class OpenRouterService:
                 return error
 
 openrouter = OpenRouterService()
+grok4_fast = Grok4_fast()
