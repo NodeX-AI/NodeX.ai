@@ -55,6 +55,7 @@ def menu_keyboard() -> InlineKeyboardMarkup:
     builder.button(text = '🔄 Изменить модель для распознавания изображений', callback_data = 'change_image_model')
     builder.button(text = '👤 Мой профиль', callback_data = 'my_profile')
     builder.button(text = '📊 Статистика', callback_data = 'statistics')
+    builder.button(text = '📑 Журнал изменений', callback_data = 'changelog')
     builder.button(text = '⚠️ Опасная зона', callback_data = 'danger_zone')
     builder.button(text = '📕 Информация о проекте', callback_data = 'info')
     builder.button(text = '❓ ЧаВо', callback_data = 'faq')

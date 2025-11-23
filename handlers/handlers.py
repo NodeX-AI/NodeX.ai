@@ -120,6 +120,13 @@ async def callback_statistics(callback: CallbackQuery) -> None:
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
     await callback.answer()
 
+@router.callback_query(F.data == 'changelog')
+@rate_limit_callbacks()
+async def callback_changelog(callback: CallbackQuery) -> None:
+    text = get_text('changelog')
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
 @router.callback_query(F.data == 'danger_zone')
 @rate_limit_callbacks()
 async def callback_danger_zone(callback: CallbackQuery) -> None:
