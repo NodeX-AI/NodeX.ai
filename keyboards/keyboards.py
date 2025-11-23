@@ -13,7 +13,6 @@ def text_models_keyboard() -> InlineKeyboardMarkup:
     builder.button(text = 'Grok 4 fast', callback_data = 'text_model_grok4fast')
     builder.button(text = 'Gemma 3', callback_data = 'text_model_gemma')
     builder.button(text = 'DeepSeek R1T2 Chimera', callback_data = 'text_model_deepseek')
-    builder.button(text = 'MiniMax M2', callback_data = 'text_model_minimax')
     builder.button(text = 'Nemotron Nano 9B V2', callback_data = 'text_model_nemotron')
     builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
     builder.adjust(2)

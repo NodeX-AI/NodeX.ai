@@ -15,6 +15,7 @@ from services.api_requests import openrouter, grok4_fast
 from utils.logger import logger
 from keyboards import keyboards
 from services.image_hosting import upload
+from utils.tasks import delete_after_delay
 
 router = Router()
 
