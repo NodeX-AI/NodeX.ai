@@ -15,6 +15,7 @@ from services.api_requests import openrouter, grok4_fast
 from utils.logger import logger
 from keyboards import keyboards
 from services.image_hosting import upload
+from utils.tasks import delete_after_delay
 
 router = Router()
 
@@ -116,6 +117,13 @@ async def callback_statistics(callback: CallbackQuery) -> None:
     popular_model_alias = statistics['popular_model']
     popular_model = get_model_display_name(popular_model_alias)
     text = get_text('statistics', total_users = total_users, total_messages = total_messages, popular_model = popular_model)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data == 'changelog')
+@rate_limit_callbacks()
+async def callback_changelog(callback: CallbackQuery) -> None:
+    text = get_text('changelog')
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
     await callback.answer()
 
