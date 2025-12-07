@@ -11,7 +11,7 @@ from utils.md_cleaner import cleaner
 from utils.decorators import rate_limit_commands, rate_limit_callbacks
 from services import rate_limit
 from utils.models import MODELS, get_model_display_name
-from services.api_requests import openrouter, grok4_fast
+from services.api_requests import openrouter, openai
 from utils.logger import logger
 from keyboards import keyboards
 from services.image_hosting import upload
@@ -202,11 +202,10 @@ async def handle_message(message: Message):
         model_alias = user['current_model'] # We get the model alias from the database
         model = MODELS[model_alias] # convert the alias to a real name
 
-        if model == 'Grok 4 fast':
-            last_message_id = await DB.get_user_recent_messages(user_id, model_alias, 1)
-            response = await grok4_fast.generate_response(message.text, last_message_id)
-            await DB.add_message(user_id, message.text, response[1], model_used=model_alias)
-            response = response[0]
+        if (model == 'Grok 4 fast') or (model == "GPT-5 mini"):
+            context = await DB.get_user_recent_messages(user_id, model_alias)
+            response = await openai.generate_response(message.text, model, context)
+            await DB.add_message(user_id, message.text, response, model_used=model_alias)
         else:
             context = await DB.get_user_recent_messages(user_id, model_alias) # Getting context (last 10 messages)
             response = await openrouter.generate_response(message.text, model, context)

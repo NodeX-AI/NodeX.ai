@@ -3,6 +3,7 @@ MODELS = {
     'deepseek' : 'tngtech/deepseek-r1t2-chimera:free',
     'nemotron' : 'nvidia/nemotron-nano-9b-v2:free',
     'grok4fast' : 'Grok 4 fast',
+    'gpt5mini' : 'GPT-5 mini',
 }
 
 MODEL_DISPLAY_NAMES = {
@@ -10,6 +11,7 @@ MODEL_DISPLAY_NAMES = {
     'deepseek' : 'DeepSeek R1T2 Chimera',
     'nemotron' : 'Nemotron Nano 9B V2',
     'grok4fast' : 'Grok 4 fast',
+    'gpt5mini' : 'GPT-5 mini',
 }
 
 def get_model_display_name(model_alias: str) -> str:

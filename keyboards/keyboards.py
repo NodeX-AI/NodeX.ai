@@ -10,6 +10,7 @@ def image_models_keyboard() -> InlineKeyboardMarkup:
 
 def text_models_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
+    builder.button(text = 'GPT-5 mini', callback_data = 'text_model_gpt5mini')
     builder.button(text = 'Grok 4 fast', callback_data = 'text_model_grok4fast')
     builder.button(text = 'Gemma 3', callback_data = 'text_model_gemma')
     builder.button(text = 'DeepSeek R1T2 Chimera', callback_data = 'text_model_deepseek')

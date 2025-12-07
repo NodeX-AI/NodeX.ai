@@ -5,48 +5,95 @@ from config.config import *
 from utils.logger import logger
 from utils.messages import get_error
 
-class Grok4_fast:
+
+
+class OpenAI_API_Service:
     def __init__(self):
-        self.key = GROK4_FAST_TOKEN
-        self.id = GROK4_FAST_ID
-        self.url = GROK4_FAST_BASE_URL
-        self.headers_grok4fast = {
-            "content-type": "application/json",
-            "authorization": f"Bearer {self.key}"
+        self.gpt5mini_key = GPT5_MINI_TOKEN
+        self.gpt5mini_id = GPT5_MINI_ID
+        self.gpt5mini_url = GPT5_MINI_BASE_URL
+        self.gpt5mini_headers = {
+            "content-type" : "application/json",
+            "authorization" : f"Bearer {self.gpt5mini_key}",
         }
-    async def generate_response(self, message: str, parent_message_id: str) -> list[str]:
+
+        self.grok4fast_key = GROK4_FAST_TOKEN
+        self.grok4fast_id = GROK4_FAST_ID
+        self.grok4fast_url = GROK4_FAST_BASE_URL
+        self.grok4fast_headers = {
+            "content-type": "application/json",
+            "authorization": f"Bearer {self.grok4fast_key}"
+        }
+
+    def _get_text_model_config(self, model: str) -> dict:
+        if 'grok' in model.lower():
+            return {
+                "base_url" : self.grok4fast_url + self.grok4fast_id + "/v1/chat/completions",
+                "headers" : self.grok4fast_headers
+            }
+        elif "gpt-5" in model.lower():
+            return {
+                "base_url" : self.gpt5mini_url + self.gpt5mini_id + "/v1/chat/completions",
+                "headers" : self.gpt5mini_headers
+            }
+    
+    async def generate_response(self, message: str, model: str, context: list = None) -> str:
+        model_config = self._get_text_model_config(model)
+        messages = []
+        if context:
+            for user_msg, ai_msg in context:
+                messages.extend([
+                {
+                    "role": "user", 
+                    "content": user_msg  
+                },
+                {
+                    "role": "assistant", 
+                    "content": ai_msg 
+                }
+            ])
+        
+        messages.append({
+        "role": "user",
+        "content": message  
+        })
+
         payload = {
-            "message" : message,
-            "parentMessageId" : parent_message_id if parent_message_id else ""
-        } # url/<agent_id>/call
-        url = f'{self.url}{self.id}/call'
+            "model" : model,
+            "messages" : messages,
+            "temperature" : 1,
+        }
+        
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.post(
-                    url,
+                    f"{model_config['base_url']}",
+                    headers=model_config['headers'],
                     json=payload,
-                    headers=self.headers_grok4fast,
-                    timeout = 120
+                    timeout=120
                 ) as response:
+                    
                     if response.status == 200:
                         data = await response.json()
-                        return [data['message'], data['response_id']]
+                        return data['choices'][0]['message']['content']
                     else:
                         error_text = await response.text()
-                        logger.error(f'[!] Ошибка API | Модель: Grok-4-fast | Статус и ошибка: {response.status} - {error_text}')
+                        logger.error(f'[!] Ошибка API | Модель: {model} | Статус и ошибка: {response.status} - {error_text}')
                         error = get_error('api_err')
                         return error
+                        
             except aiohttp.ClientError as e:
-                logger.error(f'[!] Ошибка сети: Grok-4-fast: {e}')
+                logger.error(f'[!] Ошибка сети: ({model}): {e}')
                 return f'❌ Ошибка сети'
             except asyncio.TimeoutError:
-                logger.warning('[-] Таймаут: ({model})')
+                logger.warning(f'[-] Таймаут: ({model})')
                 error = get_error('timeout')
                 return error
             except Exception as e:
-                logger.error('[!] Непредвиденная ошибка: {e} | Модель: {model}')
+                logger.error(f'[!] Непредвиденная ошибка: {e} | Модель: {model}')
                 error = get_error('unexpected')
                 return error
+    
 
 class OpenRouterService:
     def __init__(self):
@@ -174,11 +221,11 @@ class OpenRouterService:
                 logger.error(f'[!] Ошибка сети: ({model}): {e}')
                 return f'❌ Ошибка сети'
             except asyncio.TimeoutError:
-                logger.warning('[-] Таймаут: ({model})')
+                logger.warning(f'[-] Таймаут: ({model})')
                 error = get_error('timeout')
                 return error
             except Exception as e:
-                logger.error('[!] Непредвиденная ошибка: {e} | Модель: {model}')
+                logger.error(f'[!] Непредвиденная ошибка: {e} | Модель: {model}')
                 error = get_error('unexpected')
                 return error
             
@@ -230,13 +277,13 @@ class OpenRouterService:
                 logger.error(f'[!] Ошибка сети: ({model}): {e}')
                 return f'❌ Ошибка сети'
             except asyncio.TimeoutError:
-                logger.warning('[-] Таймаут: ({model})')
+                logger.warning(f'[-] Таймаут: ({model})')
                 error = get_error('timeout')
                 return error
             except Exception as e:
-                logger.error('[!] Непредвиденная ошибка: {e} | Модель: {model}')
+                logger.error(f'[!] Непредвиденная ошибка: {e} | Модель: {model}')
                 error = get_error('unexpected')
                 return error
 
 openrouter = OpenRouterService()
-grok4_fast = Grok4_fast()
+openai = OpenAI_API_Service()
