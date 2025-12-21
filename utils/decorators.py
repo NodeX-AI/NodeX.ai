@@ -5,6 +5,7 @@ from utils.messages import get_text
 from aiogram.enums import ParseMode
 import asyncio
 from utils.tasks import delete_after_delay
+from database.postgres import DB
 
 # 1. The user types /start
 # 2. wrapper(message) is called instead of cmd_start(message)
@@ -13,9 +14,11 @@ def rate_limit_commands(limit_seconds: int = 1):
     def decorator(func):
         @wraps(func)
         async def wrapper(message: Message, *args, **kwargs):
+            user_id = message.from_user.id
+            lang = await DB.get_user_language(user_id)
             #3. Check the rate limit
             if not await check_command_rate_limit(message.from_user.id, limit_seconds):
-                text = get_text('command_rate_limit')
+                text = get_text('command_rate_limit', lang)
                 message = await message.answer(text, parse_mode = ParseMode.HTML)
                 bot = message.bot
                 chat_id = message.chat.id
@@ -31,8 +34,10 @@ def rate_limit_callbacks(limit_seconds: int = 1):
     def decorator(func):
         @wraps(func)
         async def wrapper(callback: CallbackQuery, *args, **kwargs):
+            user_id = callback.from_user.id
+            lang = await DB.get_user_language(user_id)
             if not await check_callback_rate_limit(callback.from_user.id, limit_seconds):
-                text = get_text('callback_rate_limit')
+                text = get_text('callback_rate_limit', lang)
                 message = await callback.message.answer(text, parse_mode = ParseMode.HTML)
                 await callback.answer()
                 bot = message.bot

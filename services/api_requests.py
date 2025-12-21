@@ -61,7 +61,6 @@ class OpenAI_API_Service:
         payload = {
             "model" : model,
             "messages" : messages,
-            "temperature" : 1,
         }
         
         async with aiohttp.ClientSession() as session:
@@ -97,57 +96,15 @@ class OpenAI_API_Service:
 
 class OpenRouterService:
     def __init__(self):
-        self.gemma3_key = GEMMA3_TOKEN
-        self.deepseek_key = DEEPSEEK_TOKEN
-        self.nemotron_key = NEMOTRON_TOKEN
-        self.gemma3_images_key = GEMMA3_IMAGES_TOKEN
+        self.gemma3_images_key = None
 
-        self.gemma3_base_url = GEMMA3_BASE_URL
-        self.deepseek_base_url = DEEPSEEK_BASE_URL
-        self.nemotron_base_url = NEMOTRON_BASE_URL
-        self.gemma3_images_base_url = GEMMA3_BASE_URL
-
-        self.headers_gemma3 = {
-            'Authorization': f'Bearer {self.gemma3_key}',
-            'Content-Type': 'application/json'
-        }
-        
-        self.headers_deepseek = {
-            'Authorization': f'Bearer {self.deepseek_key}',
-            'Content-Type': 'application/json'
-        }
-
-        self.headers_nemotron = {
-            'Authorization': f'Bearer {self.nemotron_key}',
-            'Content-Type': 'application/json'
-        }
+        self.gemma3_images_base_url = None
 
         self.heanders_gemma3_images = {
             'Authorization': f'Bearer {self.gemma3_images_key}',
             'Content-Type': 'application/json'
         }
-    
-    def _get_text_model_config(self, model: str) -> dict:
-        if "gemma" in model.lower():
-            return {
-                "base_url": self.gemma3_base_url,
-                "headers": self.headers_gemma3
-            }
-        elif "deepseek" in model.lower():
-            return {
-                "base_url": self.deepseek_base_url, 
-                "headers": self.headers_deepseek
-            }
-        elif "nemotron" in model.lower():
-            return {
-                "base_url": self.nemotron_base_url,
-                "headers": self.headers_nemotron
-            }
-        else:
-            return {
-                "base_url": self.gemma3_base_url,
-                "headers": self.headers_gemma3
-            }
+
     def _get_image_model_config(self, model: str) -> dict:
         if 'gemma' in model.lower():
             return {
@@ -195,8 +152,6 @@ class OpenRouterService:
         payload = {
             "model": model,
             "messages": messages,
-            "max_tokens": 4000,
-            "temperature": 0.7
         }
         
         async with aiohttp.ClientSession() as session:

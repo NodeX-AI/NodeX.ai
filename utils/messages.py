@@ -7,11 +7,13 @@ MESSAGES = {
         'change_model' : '<b>Выберите модель:</b>',
         'new_model' : '<b>Модель успешно изменена на {new_model}</b>',
         'menu' : '<b>Меню:</b>',
-        'my_profile' : '<b>Ваш профиль</b>\n • <b>ID:</b> <tg-spoiler>{id}</tg-spoiler>\n • <b>Текущая модель:</b> {current_model}\n • <b>Количество сообщений:</b> {message_count}\n • <b>Зарегистрирован:</b> {created_str}',
+        'change_language' : '<b>Выберите язык:</b>',
+        'new_language' : '<b>Язык успешно изменен на:</b> <i>{lang}</i>',
+        'my_profile' : '<b>Ваш профиль</b>\n • <b>ID:</b> <tg-spoiler>{id}</tg-spoiler>\n • <b>Текущая модель:</b> <i>{current_model}</i>\n • <b>Количество сообщений:</b> <i>{message_count}</i>\n • <b>Зарегистрирован:</b> <i>{created_str}</i>\n • <b>Язык:</b> <i>{lang}</i>',
         'statistics' : '<b>Глобальная статистика:</b>\n • <b>Зарегистрированных пользователей:</b> {total_users}\n • <b>Всего сообщений:</b> {total_messages}\n • <b>Популярная модель:</b> {popular_model}',
         'changelog' : '<b>Журнал недавних изменений</b>\n\n <b>Текущая версия: v2.4 - 07.12.2025</b>\n  • <b>Добавлена новая модель:</b> GPT-5 mini\n  • Добавлен новый шаблон для взаимодействия с OpenAI-совместимым API\n\n <b>Предыдущая версия: v2.1 - 23.11.2025</b>\n  • Изменения в предоставляемых моделях\n  • Автоудаление предупреждений о частом использовании коллбеков и команд\n\n <b>Следите за новостями:</b> @NodeX_project',
         'danger_zone' : '<b>Опасная зона. Будьте аккуратнее с выбором.</b>',
-        'delete' : '<b>Вы хотите удалить {delete}</b>. Вы уверены в своем выборе?',
+        'delete' : '<b>Вы хотите удалить историю сообщений{delete}</b>. Вы уверены в своем выборе?',
         'mes_deleted' : '<b>История ваших сообщение успешно удалена</b>',
         'acc_deleted' : '<b>Ваш аккаунт упешно удален.</b> Чтобы продолжить пользоваться функциями бота нужно зарегистрироваться через команду /start',
         'command_rate_limit' : '⏳ <b>Подождите секунду перед использованием следующей команды</b>',
@@ -20,6 +22,29 @@ MESSAGES = {
         'request_processing' : '🔄 <b>Ваш предыдущий запрос еще обрабатывается.</b> Пожалуйста, дождитесь конца обработки предыдущего запроса.',
         'empty_message' : 'Пустой ответ. Вероятно, проблема произошла на стороне провайдера нейросети. Попробуйте позже. Если ошибка повторяется слишком часто направьте ее разработчику по ссылке t.me/NodeX_project?direct'
     },
+    'en' : {
+        'start' : '<b>N​o​d​e​X.​a​i</b> is a Telegram bot with access to many different neural network models.\n\n<b>By using the command</b> /start <b>you immediately agree to:</b>\n • <a href="https://telegra.ph/Politika-konfidencialnosti-telegram-bota-NodeXai-11-01">Privacy Policy</a>\n • <a href="https://telegra.ph/OGRANICHENIE-OTVETSTVENNOSTI-telegram-bota-NodeXai-11-01">Limitation of Liability Policy</a>\n • <a href="https://telegra.ph/POLZOVATELSKOE-SOGLASHENIE-telegarm-bota-NodeXai-11-01">User Agreement</a>\n<i>You, as a user, have the right to revoke the agreement by deleting your account through the "Danger Zone" menu item</i>\n • <a href="https://telegra.ph/Pravila-ispolzovaniya-telegram-bota-NodeXai-11-01">Rules for using the service</a>\n\n<b>To ask the neural network a question, write a text message</b>\n<b>Menu:</b> /menu\n\n<b>Follow the news:</b> @NodeX_project\n<b>Project founder:</b> @ghostfaccee',
+        'info' : '<b>N​o​d​e​X.​a​i</b> is an open-source project founded and developed by @ghostfaccee.\n\n<b>The project is licensed under the AGPL-3.0 license</b>, meaning it is free software, and all derivative versions of it, including cloud services, must also be distributed as open source.\n\n<b>This bot is original and you can trust it</b>, as it is inextricably linked to the <a href="https://github.com/NodeX-AI/NodeX.ai">open official repository</a>.\n\n<b>Your correspondence with the neural network model is securely encrypted with the AES-256-GCM algorithm and stored in the database</b> <a href="https://telegra.ph/Politika-konfidencialnosti-telegram-bota-NodeXai-11-01">(See Privacy Policy)</a>.\n\n<b>The Service is provided "as is" (AS IS). Full terms, including disclaimer and usage rules, are set out in the</b> <a href="https://telegra.ph/POLZOVATELSKOE-SOGLASHENIE-telegarm-bota-NodeXai-11-01">User Agreement</a> <b>and</b> <a href="https://telegra.ph/OGRANICHENIE-OTVETSTVENNOSTI-telegram-bota-NodeXai-11-01">Disclaimer Policy</a>.\n\n<b>You have the full right to delete your account and revoke accepted agreements using the "Danger Zone" section in the menu: /menu</b>',
+        'faq' : '<b>You can find answers to frequently asked questions at <a href="https://telegra.ph/CHaVo--Telegram-bot-NodeXai-11-01">link</a></b>',
+        'models' : '<b>List of available models:</b>\n • <b>GPT-5 mini</b> - a high-speed and powerful next-generation compact model from <i>OpenAI</i>, designed to instantly solve complex problems with the highest accuracy.\n • <b>Grok 4 fast</b> - a high-speed language model from <i>xAI</i>, a company owned by <b>Elon Musk</b>, optimized for fast generative interaction.\n • <b>Gemma 3</b> - a modern baseline neural network from <i>Google DeepMind</i>.\n • <b>DeepSeek R1T2 Chimera</b> - a neural network from <i>TNG Technology Consulting GmbH</i>, built on an experimental architecture where different blocks specialize in different types of problems.\n • <b>Nemotron Nano 9B V2</b> - is a modern model from <i>NVIDIA</i>, optimized for efficient everyday computing.',
+        'change_model' : '<b>Select a model:</b>',
+        'new_model' : '<b>Model successfully changed to {new_model}</b>',
+        'menu' : '<b>Menu:</b>',
+        'change_language' : '<b>Select a language:</b>',
+        'new_language' : '<b>Language successfully changed to:</b> <i>{lang}</i>',
+        'my_profile' : '<b>Your profile</b>\n • <b>ID:</b> <tg-spoiler>{id}</tg-spoiler>\n • <b>Current model:</b> <i>{current_model}</i>\n • <b>Number of messages:</b> <i>{message_count}</i>\n • <b>Registered:</b> <i>{created_str}</i>\n • <b>Language:</b> <i>{lang}</i>',
+        'statistics' : '<b>Global statistics:</b>\n • <b>Registered users:</b> {total_users}\n • <b>Total messages:</b> {total_messages}\n • <b>Popular model:</b> {popular_model}',
+        'changelog' : '<b>Recent changelog</b>\n\n <b>Current version: v2.4 - 2025-12-07</b>\n • <b>Added new model:</b> GPT-5 mini\n • Added new template for interacting with OpenAI-compatible API\n\n <b>Previous version: v2.1 - 23.11.2025</b>\n • Changes to provided models\n • Automatic removal of warnings about frequent use of callbacks and commands\n\n <b>Follow the news:</b> @NodeX_project',
+        'danger_zone' : '<b>Danger zone. Be careful with your choices.</b>',
+        'delete' : '<b>You want to delete your message history{delete}</b>. Are you sure about your choice?',
+        'mes_deleted' : '<b>Your message history has been successfully deleted</b>',
+        'acc_deleted' : '<b>Your account has been successfully deleted.</b> To continue using the bot\'s features, you must register using the /start command',
+        'command_rate_limit' : '⏳ <b>Wait a second before using the next command</b>',
+        'callback_rate_limit' : '⏳ <b>Wait a second before using the next button</b>',
+        'remaining_time' : '⏳ <b>Next request in {remaining_time} seconds</b>',
+        'request_processing' : '🔄 <b>Your previous request is still being processed.</b> Please wait until the previous request is finished processing.',
+        'empty_message' : 'Empty response. The problem likely occurred on the neural network provider\'s side. Try again later. If the error persists too often, please forward it to the developer at t.me/NodeX_project?direct'
+    }
 }
 
 WARNINGS = {
@@ -51,7 +76,6 @@ def get_error(error_key: str, **kwargs) -> str:
     text = ERRORS[language][error_key]
     return text.format(**kwargs) if kwargs else text
 
-def get_text(text_key: str, **kwargs) -> str:
-    language = 'ru'
+def get_text(text_key: str, language: str, **kwargs) -> str:
     text = MESSAGES[language][text_key]
     return text.format(**kwargs) if kwargs else text

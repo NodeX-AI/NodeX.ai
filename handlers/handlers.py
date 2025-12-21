@@ -15,7 +15,6 @@ from services.api_requests import openrouter, openai
 from utils.logger import logger
 from keyboards import keyboards
 from services.image_hosting import upload
-from utils.tasks import delete_after_delay
 
 router = Router()
 
@@ -24,73 +23,110 @@ router = Router()
 @router.message(CommandStart())
 @rate_limit_commands()
 async def cmd_start(message: Message) -> None:
-    await DB.add_user(message.from_user.id)
-    text = get_text('start')
+    user_id = message.from_user.id
+    await DB.add_user(user_id)
+    lang = await DB.get_user_language(user_id)
+    text = get_text('start', lang)
     await message.answer(text, parse_mode = ParseMode.HTML)
 
 @router.message(Command('menu'))
 @rate_limit_commands()
 async def cmd_menu(message: Message) -> None:
-    text = get_text('menu')
-    await message.answer(text, reply_markup = keyboards.menu_keyboard(), parse_mode = ParseMode.HTML)
+    user_id = message.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('menu', lang)
+    await message.answer(text, reply_markup = keyboards.menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
 
 # === callbacks ===
 
 @router.callback_query(F.data == 'info')
 @rate_limit_callbacks()
 async def callback_info(callback: CallbackQuery) -> None:
-    text = get_text('info')
-    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('info', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data == 'faq')
 @rate_limit_callbacks()
 async def callback_faq(callback: CallbackQuery) -> None:
-    text = get_text('faq')
-    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('faq', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data == 'models')
 @rate_limit_callbacks()
 async def callback_models(callback: CallbackQuery) -> None:
-    text = get_text('models')
-    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('models', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data == 'change_language')
+@rate_limit_callbacks()
+async def callback_change_language(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('change_language', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.change_language_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data == 'change_image_model')
 @rate_limit_callbacks()
 async def callback_change_image_model(callback: CallbackQuery) -> None:
-    text = get_text('change_model')
-    await callback.message.edit_text(text, reply_markup = keyboards.image_models_keyboard(), parse_mode = ParseMode.HTML)
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('change_model', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.image_models_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data == 'change_text_model')
 @rate_limit_callbacks()
 async def callback_change_text_model(callback: CallbackQuery) -> None:
-    text = get_text('change_model')
-    await callback.message.edit_text(text, reply_markup = keyboards.text_models_keyboard(), parse_mode = ParseMode.HTML)
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('change_model', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.text_models_keyboard(language = lang), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data.startswith('language_'))
+@rate_limit_callbacks()
+async def callback_new_language(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    new_lang = callback.data.split('_')[1]
+    await DB.update_user_language(user_id, new_lang)
+    text = get_text('new_language', new_lang, lang = new_lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(language = new_lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data.startswith('image_model_'))
 @rate_limit_callbacks()
 async def callback_new_image_model(callback: CallbackQuery) -> None:
     user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    user_id = callback.from_user.id
     model_alias = callback.data.split('_')[2]
     await DB.update_user_image_model(user_id, model_alias)
     model = get_model_display_name(model_alias)
-    text = get_text('new_model', new_model = model)
-    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    text = get_text('new_model', lang, new_model = model)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data.startswith('text_model_'))
 @rate_limit_callbacks()
 async def callback_new_text_model(callback: CallbackQuery) -> None:
     user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    user_id = callback.from_user.id
     model_alias = callback.data.split('_')[2]
     await DB.update_user_text_model(user_id, model_alias)
     model = get_model_display_name(model_alias)
-    text = get_text('new_model', new_model = model)
-    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    text = get_text('new_model', lang, new_model = model)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data == 'my_profile')
@@ -101,73 +137,87 @@ async def callback_my_profile(callback: CallbackQuery) -> None:
     user_record = await DB.get_user(user_id)
     current_model_alias = user_record['current_model']
     current_model = get_model_display_name(current_model_alias)
+    current_language = user_record['current_language']
     created_at = user_record['created_at']
     created_str = created_at.strftime("%d.%m.%Y %H:%M")
     message_count = await DB.get_user_message_count(user_id)
-    text = get_text('my_profile', id = user_id, current_model = current_model, message_count = message_count, created_str = created_str)
+    text = get_text('my_profile', current_language, id = user_id, current_model = current_model, message_count = message_count, created_str = created_str, lang = current_language)
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data == 'statistics')
 @rate_limit_callbacks()
 async def callback_statistics(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
     statistics = await DB.get_global_stats()
     total_users = statistics['total_users']
     total_messages = statistics['total_messages']
     popular_model_alias = statistics['popular_model']
     popular_model = get_model_display_name(popular_model_alias)
-    text = get_text('statistics', total_users = total_users, total_messages = total_messages, popular_model = popular_model)
-    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    text = get_text('statistics', lang, total_users = total_users, total_messages = total_messages, popular_model = popular_model)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data == 'changelog')
 @rate_limit_callbacks()
 async def callback_changelog(callback: CallbackQuery) -> None:
-    text = get_text('changelog')
-    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('changelog', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data == 'danger_zone')
 @rate_limit_callbacks()
 async def callback_danger_zone(callback: CallbackQuery) -> None:
-    text = get_text('danger_zone')
-    await callback.message.edit_text(text, reply_markup = keyboards.danger_zone_keyboard(), parse_mode = ParseMode.HTML)
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('danger_zone', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.danger_zone_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data == 'back_to_menu')
 @rate_limit_callbacks()
 async def callback_back_to_menu(callback: CallbackQuery) -> None:
-    text = get_text('menu')
-    await callback.message.edit_text(text, reply_markup = keyboards.menu_keyboard(), parse_mode = ParseMode.HTML)
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('menu', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data.startswith('delete_'))
 @rate_limit_callbacks()
 async def callback_delete(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
     delete = callback.data.split('_')[1]
     try:
         if delete == 'messages':
-            text = get_text('delete', delete = 'историю сообщений')
-            await callback.message.edit_text(text, reply_markup = keyboards.delete_messages_keyboard(), parse_mode = ParseMode.HTML)
+            text = get_text('delete', lang, delete = '')
+            await callback.message.edit_text(text, reply_markup = keyboards.delete_messages_keyboard(language = lang), parse_mode = ParseMode.HTML)
         else:
-            text = get_text('delete', delete = 'историю сообщений и аккаунт')
-            await callback.message.edit_text(text, reply_markup = keyboards.delete_account_keyboard(), parse_mode = ParseMode.HTML)
+            delete = ' и аккаунт' if lang == 'ru' else ' and account'
+            text = get_text('delete', lang, delete = delete)
+            await callback.message.edit_text(text, reply_markup = keyboards.delete_account_keyboard(language = lang), parse_mode = ParseMode.HTML)
     finally:
         await callback.answer()
 
 @router.callback_query(F.data.startswith('sure_'))
 @rate_limit_callbacks()
 async def callback_sure_delete(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
     delete = callback.data.split('_')[2]
     user_id = callback.from_user.id
     try:
         if delete == 'messages':
             await DB.delete_user_messages(user_id)
-            text = get_text('mes_deleted')
+            text = get_text('mes_deleted', lang)
             await callback.message.edit_text(text, parse_mode = ParseMode.HTML)
         else:
             await DB.delete_user(user_id)
-            text = get_text('acc_deleted')
+            text = get_text('acc_deleted', lang)
             await callback.message.edit_text(text, parse_mode = ParseMode.HTML)
     finally:
         await callback.answer()
