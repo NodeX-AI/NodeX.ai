@@ -1,27 +1,22 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup
 
-'''
-def image_models_keyboard() -> InlineKeyboardMarkup:
-    builder = InlineKeyboardBuilder()
-    builder.button(text = 'Gemma 3', callback_data = 'image_model_gemma')
-    builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
-    builder.adjust(1)
-    return builder.as_markup()
-'''
-
 def text_models_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
     if language == 'ru':
         builder = InlineKeyboardBuilder()
+        builder.button(text = 'Gemini 3 Flash Preview', callback_data = 'text_model_gemini3flashprev')
         builder.button(text = 'GPT-5 mini', callback_data = 'text_model_gpt5mini')
         builder.button(text = 'Grok 4 fast', callback_data = 'text_model_grok4fast')
+        builder.button(text = 'DeepSeek V3.2', callback_data = 'text_model_deepseekv32')
         builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
         builder.adjust(2)
         return builder.as_markup()
     else:
         builder = InlineKeyboardBuilder()
+        builder.button(text = 'Gemini 3 Flash Preview', callback_data = 'text_model_gemini3flashprev')
         builder.button(text = 'GPT-5 mini', callback_data = 'text_model_gpt5mini')
         builder.button(text = 'Grok 4 fast', callback_data = 'text_model_grok4fast')
+        builder.button(text = 'DeepSeek V3.2', callback_data = 'text_model_deepseekv32')
         builder.button(text = '⬅️ Back to menu', callback_data = 'back_to_menu')
         builder.adjust(2)
         return builder.as_markup()
@@ -95,7 +90,6 @@ def menu_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         builder.button(text = '🤖 Доступные модели', callback_data = 'models')
         builder.button(text = '📄 Изменить текстовую модель', callback_data = 'change_text_model')
-        builder.button(text = '🖼️ Изменить модель для распознавания изображений', callback_data = 'change_image_model')
         builder.button(text = '🔄 Сменить язык интерфейса', callback_data = 'change_language')
         builder.button(text = '👤 Мой профиль', callback_data = 'my_profile')
         builder.button(text = '📊 Статистика', callback_data = 'statistics')
@@ -109,7 +103,6 @@ def menu_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder()
         builder.button(text = '🤖 Available models', callback_data = 'models')
         builder.button(text = '📄 Change the text model', callback_data = 'change_text_model')
-        builder.button(text = '🖼️ Change the model for image recognition', callback_data = 'change_image_model')
         builder.button(text = '🔄 Change interface language', callback_data = 'change_language')
         builder.button(text = '👤 My profile', callback_data = 'my_profile')
         builder.button(text = '📊 Statistics', callback_data = 'statistics')

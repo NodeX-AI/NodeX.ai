@@ -10,8 +10,8 @@ from utils.messages import get_text, get_warn, get_error
 from utils.md_cleaner import cleaner
 from utils.decorators import rate_limit_commands, rate_limit_callbacks
 from services import rate_limit
-from utils.models import MODELS, get_model_display_name
-from services.api_requests import openrouter, openai
+from utils.models import MODELS, get_model_display_name, OpenAI_API_Models
+from services.api_requests import openai
 from utils.logger import logger
 from keyboards import keyboards
 from services.image_hosting import upload
@@ -121,7 +121,6 @@ async def callback_new_image_model(callback: CallbackQuery) -> None:
 async def callback_new_text_model(callback: CallbackQuery) -> None:
     user_id = callback.from_user.id
     lang = await DB.get_user_language(user_id)
-    user_id = callback.from_user.id
     model_alias = callback.data.split('_')[2]
     await DB.update_user_text_model(user_id, model_alias)
     model = get_model_display_name(model_alias)
@@ -225,21 +224,22 @@ async def callback_sure_delete(callback: CallbackQuery) -> None:
 # === text ===
 @router.message(F.text)
 async def handle_message(message: Message):
+    user_id = message.from_user.id
+    lang = await DB.get_user_language(user_id)
     if message.text.startswith('/'):
         return
     
-    user_id = message.from_user.id
     
     remaining_time = await rate_limit.check_rate_limit(user_id)
     # Has it been 10 seconds since the previous request was answered?
     if remaining_time > 0:
-        text = get_text('remaining_time', remaining_time = remaining_time)
+        text = get_text('remaining_time', lang, remaining_time = remaining_time)
         await message.answer(text, parse_mode = ParseMode.HTML)
         return
     
     # Checking if a request is already being processed
     if await rate_limit.check_processing_lock(user_id):
-        text = get_text('request_processing')
+        text = get_text('request_processing', lang)
         await message.answer(text, parse_mode = ParseMode.HTML)
         return
     
@@ -252,14 +252,9 @@ async def handle_message(message: Message):
         model_alias = user['current_model'] # We get the model alias from the database
         model = MODELS[model_alias] # convert the alias to a real name
 
-        if (model == 'Grok 4 fast') or (model == "GPT-5 mini"):
-            context = await DB.get_user_recent_messages(user_id, model_alias)
-            response = await openai.generate_response(message.text, model, context)
-            await DB.add_message(user_id, message.text, response, model_used=model_alias)
-        else:
-            context = await DB.get_user_recent_messages(user_id, model_alias) # Getting context (last 10 messages)
-            response = await openrouter.generate_response(message.text, model, context)
-            await DB.add_message(user_id, message.text, response, model_used=model_alias)
+        context = await DB.get_user_recent_messages(user_id, model_alias)
+        response = await openai.generate_response(message.text, model, context)
+        await DB.add_message(user_id, message.text, response, model_used=model_alias)
         
         cleaned_response = cleaner.clean(response)
         if len(cleaned_response) > 4096:
@@ -277,72 +272,3 @@ async def handle_message(message: Message):
         await message.answer(text, parse_mode = ParseMode.HTML)
     finally:
         await rate_limit.remove_processing_lock(user_id)
-
-# === image ===
-@router.message(F.photo)
-async def handle_image(message: Message) -> None:
-    user_id = message.from_user.id
-    remaining_time = await rate_limit.check_rate_limit(user_id)
-
-    if remaining_time > 0:
-        text = get_text('remaining_time', remaining_time = remaining_time)
-        await message.answer(text, parse_mode = ParseMode.HTML)
-        return
-    
-    if await rate_limit.check_processing_lock(user_id):
-        text = get_text('request_processing')
-        await message.answer(text, parse_mode = ParseMode.HTML)
-        return
-    
-    try:
-        await rate_limit.set_processing_lock(user_id)
-        await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
-
-        model_alias = await DB.get_user_image_model(user_id)
-        model = MODELS[model_alias]
-
-        # получаем фото
-        image = message.photo[-1]
-        file_id = image.file_id
-
-        # скачиваем фото
-        file = await message.bot.get_file(file_id)
-        file_bytes_io = await message.bot.download_file(file.file_path)
-        file_bytes = file_bytes_io.getvalue()
-
-        # загружаем изображение на хост
-        image_url = await upload(file_bytes)
-
-        if not image_url:
-            text = get_error('error_image_host')
-            await message.answer(text, parse_mode = ParseMode.HTML)
-            return
-        
-        prompt = message.caption
-        if not prompt or prompt.strip() == '':
-            prompt = 'Опиши изображение'
-        
-        response = await openrouter.generate_response_from_image(image_url, model, prompt)
-        cleaned_response = cleaner.clean(response)
-        if len(cleaned_response) == 0:
-            text = get_text('empty_message')
-            await message.answer(text)
-            return
-
-        if len(cleaned_response) > 4096:
-            chunks = [cleaned_response[i:i+4096] for i in range(0, len(cleaned_response), 4096)]
-            for chunk in chunks:
-                await message.answer(chunk)
-                await asyncio.sleep(1)
-        else:
-            await message.answer(cleaned_response)
-
-        await rate_limit.set_rate_limit(user_id)
-    except Exception as e:
-        logger.error(f'Ошибка обработки фото: {e}')
-        text = get_error('error_in_handler')
-        await message.answer(text, parse_mode = ParseMode.HTML)
-    finally:
-        await rate_limit.remove_processing_lock(user_id)
-        if 'file_bytes' in locals():
-            del file_bytes

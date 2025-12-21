@@ -25,6 +25,22 @@ class OpenAI_API_Service:
             "authorization": f"Bearer {self.grok4fast_key}"
         }
 
+        self.gemini3flashpreview_key = GEMINI_3_FLASH_PREVIEW_TOKEN
+        self.gemini3flashpreview_id = GEMINI_3_FLASH_PREVIEW_ID
+        self.gemini3flashpreview_url = GEMINI_3_FLASH_PREVIEW_URL
+        self.gemini3flashpreview_headers = {
+            "content-type": "application/json",
+            "authorization": f"Bearer {self.gemini3flashpreview_key}"
+        }
+
+        self.deepseekv32_key = DEEPSEEK_V3_TOKEN
+        self.deepseekv32_id = DEEPSEEK_V3_ID
+        self.deepseekv32_url = DEEPSEEK_V3_URL
+        self.deepseekv32_headers = {
+            "content-type": "application/json",
+            "authorization": f"Bearer {self.deepseekv32_key}"
+        }
+
     def _get_text_model_config(self, model: str) -> dict:
         if 'grok' in model.lower():
             return {
@@ -35,6 +51,16 @@ class OpenAI_API_Service:
             return {
                 "base_url" : self.gpt5mini_url + self.gpt5mini_id + "/v1/chat/completions",
                 "headers" : self.gpt5mini_headers
+            }
+        elif "deepseek" in model.lower():
+            return {
+                "base_url" : self.deepseekv32_url + self.deepseekv32_id + "/v1/chat/completions",
+                "headers" : self.deepseekv32_headers
+            }
+        elif "gemini" in model.lower():
+            return {
+                "base_url" : self.gemini3flashpreview_url + self.gemini3flashpreview_id + "/v1/chat/completions",
+                "headers" : self.gemini3flashpreview_headers
             }
     
     async def generate_response(self, message: str, model: str, context: list = None) -> str:
@@ -92,153 +118,5 @@ class OpenAI_API_Service:
                 logger.error(f'[!] Непредвиденная ошибка: {e} | Модель: {model}')
                 error = get_error('unexpected')
                 return error
-    
 
-class OpenRouterService:
-    def __init__(self):
-        self.gemma3_images_key = None
-
-        self.gemma3_images_base_url = None
-
-        self.heanders_gemma3_images = {
-            'Authorization': f'Bearer {self.gemma3_images_key}',
-            'Content-Type': 'application/json'
-        }
-
-    def _get_image_model_config(self, model: str) -> dict:
-        if 'gemma' in model.lower():
-            return {
-                "base_url" : self.gemma3_images_base_url,
-                "headers" : self.heanders_gemma3_images
-            }
-        
-    async def generate_response(self, message: str, model: str, context: list = None) -> str:
-        model_config = self._get_text_model_config(model)
-        messages = []
-        
-        if context:
-            for user_msg, ai_msg in context:
-                messages.extend([
-                {
-                    "role": "user", 
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": user_msg
-                        }
-                    ]
-                },
-                {
-                    "role": "assistant", 
-                    "content": [
-                        {
-                            "type": "text", 
-                            "text": ai_msg
-                        }
-                    ]
-                    }
-                ])
-        
-        messages.append({
-        "role": "user", 
-        "content": [
-            {
-                "type": "text",
-                "text": message
-            }
-            ]
-        })
-        
-        payload = {
-            "model": model,
-            "messages": messages,
-        }
-        
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(
-                    f"{model_config['base_url']}",
-                    headers=model_config['headers'],
-                    json=payload,
-                    timeout=120
-                ) as response:
-                    
-                    if response.status == 200:
-                        data = await response.json()
-                        return data['choices'][0]['message']['content']
-                    else:
-                        error_text = await response.text()
-                        logger.error(f'[!] Ошибка API | Модель: {model} | Статус и ошибка: {response.status} - {error_text}')
-                        error = get_error('api_err')
-                        return error
-                        
-            except aiohttp.ClientError as e:
-                logger.error(f'[!] Ошибка сети: ({model}): {e}')
-                return f'❌ Ошибка сети'
-            except asyncio.TimeoutError:
-                logger.warning(f'[-] Таймаут: ({model})')
-                error = get_error('timeout')
-                return error
-            except Exception as e:
-                logger.error(f'[!] Непредвиденная ошибка: {e} | Модель: {model}')
-                error = get_error('unexpected')
-                return error
-            
-    async def generate_response_from_image(self, url: str, model: str, prompt: str) -> str:
-        model_config = self._get_image_model_config(model)
-        
-        messages = [{
-            "role": "user", 
-            "content": [
-                {
-                    "type": "text",
-                    "text": prompt
-                },
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": url
-                    }
-                }
-            ]
-        }]
-
-        payload = {
-            "model": model,
-            "messages": messages,
-            "max_tokens": 4000,
-            "temperature": 0.7
-        }
-
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(
-                    f"{model_config['base_url']}",
-                    headers=model_config['headers'],
-                    json=payload,
-                    timeout=120
-                ) as response:
-                    
-                    if response.status == 200:
-                        data = await response.json()
-                        return data['choices'][0]['message']['content']
-                    else:
-                        error_text = await response.text()
-                        logger.error(f'[!] Ошибка API | Модель: {model} | Статус и ошибка: {response.status} - {error_text}')
-                        error = get_error('api_err')
-                        return error
-                        
-            except aiohttp.ClientError as e:
-                logger.error(f'[!] Ошибка сети: ({model}): {e}')
-                return f'❌ Ошибка сети'
-            except asyncio.TimeoutError:
-                logger.warning(f'[-] Таймаут: ({model})')
-                error = get_error('timeout')
-                return error
-            except Exception as e:
-                logger.error(f'[!] Непредвиденная ошибка: {e} | Модель: {model}')
-                error = get_error('unexpected')
-                return error
-
-openrouter = OpenRouterService()
 openai = OpenAI_API_Service()
