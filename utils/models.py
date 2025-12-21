@@ -1,17 +1,22 @@
 MODELS = {
-    'gemma' : 'google/gemma-3-27b-it:free',
-    'deepseek' : 'tngtech/deepseek-r1t2-chimera:free',
-    'nemotron' : 'nvidia/nemotron-nano-9b-v2:free',
     'grok4fast' : 'Grok 4 fast',
     'gpt5mini' : 'GPT-5 mini',
+    'deepseekv32' : 'DeepSeek V3.2',
+    'gemini3flashprev' : 'Gemini 3 Flash Preview',
 }
 
+OpenAI_API_Models = [
+    'Grok 4 fast',
+    'GPT-5 mini',
+    'DeepSeek V3.2',
+    'Gemini 3 Flash Preview',
+]
+
 MODEL_DISPLAY_NAMES = {
-    'gemma' : 'Gemma 3',
-    'deepseek' : 'DeepSeek R1T2 Chimera',
-    'nemotron' : 'Nemotron Nano 9B V2',
     'grok4fast' : 'Grok 4 fast',
     'gpt5mini' : 'GPT-5 mini',
+    'deepseekv32' : 'DeepSeek V3.2',
+    'gemini3flashprev' : 'Gemini 3 Flash Preview',
 }
 
 def get_model_display_name(model_alias: str) -> str:
