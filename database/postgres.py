@@ -76,8 +76,8 @@ class PostgresDB:
     
     async def get_user_recent_messages(self, telegram_id: int, model: str,limit: int = 5) -> List[Tuple[str, str]]: #
         async with self.pool.acquire() as conn:
-            rows = await conn.fetch("SELECT message_text, ai_response FROM messages WHERE user_id = $1 AND model_used = $2 ORDER BY created_at ASC LIMIT $3",
-                                    telegram_id, model, limit) # ASC - sort in ascending order
+            rows = await conn.fetch("SELECT message_text, ai_response FROM messages WHERE user_id = $1 AND model_used = $2 ORDER BY created_at DESC LIMIT $3",
+                                    telegram_id, model, limit) 
             return [
                 (encryptor.decrypt(row['message_text']), 
                 encryptor.decrypt(row['ai_response']))
