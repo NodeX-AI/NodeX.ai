@@ -37,6 +37,14 @@ async def cmd_menu(message: Message) -> None:
     text = get_text('menu', lang)
     await message.answer(text, reply_markup = keyboards.menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
 
+@router.message(Command('support'))
+@rate_limit_commands()
+async def cmd_support(message: Message) -> None:
+    user_id = message.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('support', lang)
+    await message.answer(text, reply_markup = keyboards.support_keyboard(language = lang), parse_mode = ParseMode.HTML)
+
 # === callbacks ===
 
 @router.callback_query(F.data == 'info')
@@ -183,6 +191,33 @@ async def callback_back_to_menu(callback: CallbackQuery) -> None:
     lang = await DB.get_user_language(user_id)
     text = get_text('menu', lang)
     await callback.message.edit_text(text, reply_markup = keyboards.menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data == 'back_to_support')
+@rate_limit_callbacks()
+async def callback_back_to_support(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('support', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.support_keyboard(language = lang), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data == 'ideas')
+@rate_limit_callbacks()
+async def callback_ideas(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('ideas', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_support_keyboard(language = lang), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data == 'bug_report')
+@rate_limit_callbacks()
+async def callback_bug_report(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('bug_report', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.back_to_support_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
 @router.callback_query(F.data.startswith('delete_'))
