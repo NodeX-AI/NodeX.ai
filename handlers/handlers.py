@@ -13,6 +13,7 @@ from services import rate_limit
 from utils.models import MODELS, get_model_display_name, OpenAI_API_Models
 from services.api_requests import openai
 from utils.logger import logger
+from utils.xmas_stickers import get_sticker
 from keyboards import keyboards
 from services.image_hosting import upload
 
@@ -54,6 +55,32 @@ async def cmd_support(message: Message) -> None:
     await message.answer(text, reply_markup = keyboards.support_keyboard(language = lang), parse_mode = ParseMode.HTML)
 
 # === callbacks ===
+
+@router.callback_query(F.data == 'tree')
+@rate_limit_callbacks()
+async def callback_tree(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('tree', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.tree_keyboard(language = lang), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data == 'sure')
+@rate_limit_callbacks()
+async def callback_playlists(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('playlists', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.playlists_keyboard(language = lang), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data == 'snowflake')
+@rate_limit_callbacks()
+async def callback_snowflake(callback: CallbackQuery) -> None:
+    sticker = get_sticker()
+    await callback.message.answer(sticker)
+    await callback.answer()
+
 
 @router.callback_query(F.data == 'info')
 @rate_limit_callbacks()

@@ -1,6 +1,43 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup
 
+def tree_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
+    if language == 'ru':
+        builder = InlineKeyboardBuilder()
+        builder.button(text = 'Конечно! 🎇', callback_data = 'sure')
+        builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
+        builder.adjust(1)
+        return builder.as_markup()
+    else:
+        builder = InlineKeyboardBuilder()
+        builder.button(text = 'Sure! 🎇', callback_data = 'sure')
+        builder.button(text = '⬅️ Back to menu', callback_data = 'back_to_menu')
+        builder.adjust(1)
+        return builder.as_markup()
+
+def playlists_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
+    if language == 'ru':
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '🕯️ Instrumental (Яндекс музыка)', url = 'https://music.yandex.ru/users/newyearplaylists/playlists/1244?utm_medium=copy_link&ref_id=222bbd30-a61c-4ff5-8cfb-9f4fb9bff1aa')
+        builder.button(text = '🎄 Top songs (Яндекс музыка)', url = 'https://music.yandex.ru/users/newyearplaylists/playlists/1309?utm_medium=copy_link&ref_id=3b2c7eda-c480-44b3-bf98-71f5f8396771')
+        builder.button(text = '🕯️ Instrumental (YouTube)', url = 'https://youtu.be/A2_p7di7QHY?si=CiaOuhMy6SqYOV40')
+        builder.button(text = '🎄 Top songs (YouTube)', url = 'https://youtu.be/mG9RwWXaYcw?si=X_-uWdlQizMLtN3d')
+        builder.button(text = '❄️', callback_data = 'snowflake')
+        builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
+        builder.adjust(2,2,1,1)
+        return builder.as_markup()
+    else:
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '🕯️ Instrumental (Yandex music)', url = 'https://music.yandex.ru/users/newyearplaylists/playlists/1244?utm_medium=copy_link&ref_id=222bbd30-a61c-4ff5-8cfb-9f4fb9bff1aa')
+        builder.button(text = '🎄 Top songs (Yandex music)', url = 'https://music.yandex.ru/users/newyearplaylists/playlists/1309?utm_medium=copy_link&ref_id=3b2c7eda-c480-44b3-bf98-71f5f8396771')
+        builder.button(text = '🕯️ Instrumental (YouTube)', url = 'https://youtu.be/A2_p7di7QHY?si=CiaOuhMy6SqYOV40')
+        builder.button(text = '🎄 Top songs (YouTube)', url = 'https://youtu.be/mG9RwWXaYcw?si=X_-uWdlQizMLtN3d')
+        builder.button(text = '❄️', callback_data = 'snowflake')
+        builder.button(text = '⬅️ Back to menu', callback_data = 'back_to_menu')
+        builder.adjust(2,2,1,1)
+        return builder.as_markup()
+    
+
 def text_models_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
     if language == 'ru':
         builder = InlineKeyboardBuilder()
@@ -88,28 +125,31 @@ def delete_account_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
 def menu_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
     if language == 'ru':
         builder = InlineKeyboardBuilder()
+
         builder.button(text = '🤖 Доступные модели', callback_data = 'models')
-        builder.button(text = '📄 Изменить текстовую модель', callback_data = 'change_text_model')
-        builder.button(text = '🔄 Сменить язык интерфейса', callback_data = 'change_language')
-        builder.button(text = '👤 Мой профиль', callback_data = 'my_profile')
-        builder.button(text = '📊 Статистика', callback_data = 'statistics')
-        builder.button(text = '📑 Журнал изменений проекта', callback_data = 'changelog')
-        builder.button(text = '⚠️ Опасная зона', callback_data = 'danger_zone')
-        builder.button(text = '📕 Информация о проекте', callback_data = 'info')
-        builder.button(text = '❓ ЧаВо', callback_data = 'faq')
+        builder.button(text = '❄️ Изменить текстовую модель', callback_data = 'change_text_model')
+        builder.button(text = '🦌 Сменить язык интерфейса', callback_data = 'change_language')
+        builder.button(text = '🎅 Мой профиль', callback_data = 'my_profile')
+        builder.button(text = '☃️ Статистика', callback_data = 'statistics')
+        builder.button(text = '🎁 Журнал изменений проекта', callback_data = 'changelog')
+        builder.button(text = '🧊 Опасная зона', callback_data = 'danger_zone')
+        builder.button(text = '🌌 Информация о проекте', callback_data = 'info')
+        builder.button(text = '🏔️ ЧаВо', callback_data = 'faq')
+        builder.button(text = '🎄', callback_data = 'tree')
         builder.adjust(2)
         return builder.as_markup()
     else:
         builder = InlineKeyboardBuilder()
         builder.button(text = '🤖 Available models', callback_data = 'models')
-        builder.button(text = '📄 Change the text model', callback_data = 'change_text_model')
-        builder.button(text = '🔄 Change interface language', callback_data = 'change_language')
-        builder.button(text = '👤 My profile', callback_data = 'my_profile')
-        builder.button(text = '📊 Statistics', callback_data = 'statistics')
-        builder.button(text = '📑 Project change log', callback_data = 'changelog')
-        builder.button(text = '⚠️ Danger zone', callback_data = 'danger_zone')
-        builder.button(text = '📕 Project information', callback_data = 'info')
-        builder.button(text = '❓ FaQ', callback_data = 'faq')
+        builder.button(text = '❄️ Change the text model', callback_data = 'change_text_model')
+        builder.button(text = '🦌 Change interface language', callback_data = 'change_language')
+        builder.button(text = '🎅 My profile', callback_data = 'my_profile')
+        builder.button(text = '☃️ Statistics', callback_data = 'statistics')
+        builder.button(text = '🎁 Project change log', callback_data = 'changelog')
+        builder.button(text = '🧊 Danger zone', callback_data = 'danger_zone')
+        builder.button(text = '🌌 Project information', callback_data = 'info')
+        builder.button(text = '🏔️ FaQ', callback_data = 'faq')
+        builder.button(text = '🎄', callback_data = 'tree')
         builder.adjust(2)
         return builder.as_markup()
 
