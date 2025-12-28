@@ -37,6 +37,14 @@ async def cmd_menu(message: Message) -> None:
     text = get_text('menu', lang)
     await message.answer(text, reply_markup = keyboards.menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
 
+@router.message(Command('help'))
+@rate_limit_commands()
+async def cmd_help(message: Message) -> None:
+    user_id = message.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('help', lang)
+    await message.answer(text, parse_mode = ParseMode.HTML)
+
 @router.message(Command('support'))
 @rate_limit_commands()
 async def cmd_support(message: Message) -> None:
