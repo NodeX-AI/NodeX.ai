@@ -7,6 +7,9 @@ MESSAGES = {
         'change_model' : '<b>Выберите модель:</b>',
         'new_model' : '<b>Модель успешно изменена на {new_model}</b>',
         'menu' : '<b>Меню:</b>',
+        'support' : '<b>Поддержка проекта N​o​d​e​X.​a​i</b>\n\n <b>N​o​d​e​X.​a​i</b> - проект, созданный с энтузиазмом. Здесь собраны современные нейросети, которые каждый может использовать бесплатно, без платных подписок или ограничений.\n\n Если проект тебе понравился и ты хочешь внести свой вклад в его развитие - вот несколько вариантов.',
+        'ideas' : '<b>Предложить идею</b>\n\nВы можете предложить свою идею двумя способами:\n • <b>Отправить ее на почту:</b> nodex.project@gmail.com\n • <b>Отправить ее сообщением по ссылке:</b> t.me/NodeX_project?direct.\n\n<b>Каждое предложение будет внимательно изучено. Спасибо за помощь в развитии проекта!</b>',
+        'bug_report' : '<b>Сообщить об ошибке</b>\n\nВы можете сообщить об ошибке двумя способами:\n • <b>Отправить ее на почту:</b> nodex.project@gmail.com\n • <b>Отправить ее сообщением по ссылке:</b> t.me/NodeX_project?direct.\n\n<b>Каждый недочет будет внимательно изучен. Спасибо за помощь в развитии проекта!</b>',
         'change_language' : '<b>Выберите язык:</b>',
         'new_language' : '<b>Язык успешно изменен на:</b> <i>{lang}</i>',
         'my_profile' : '<b>Ваш профиль</b>\n • <b>ID:</b> <tg-spoiler>{id}</tg-spoiler>\n • <b>Текущая модель:</b> <i>{current_model}</i>\n • <b>Количество сообщений:</b> <i>{message_count}</i>\n • <b>Зарегистрирован:</b> <i>{created_str}</i>\n • <b>Язык:</b> <i>{lang}</i>',
@@ -29,6 +32,9 @@ MESSAGES = {
         'models' : '<b>List of available models:</b>\n • <b>GPT-5 mini</b> - <i>OpenAI\'s</i> next-generation, high-speed, and powerful compact model designed to solve complex problems with pinpoint accuracy in seconds.\n • <b>Grok 4 fast</b> - <i>Elon Musk\'s</i> high-speed language model optimized for fast, generative interactions.\n • <b>Gemini 3 Flash Preview</b> - <i>Google\'s</i> fastest, most efficient Gemini model, ideal for tasks that require near-instantaneous response while maintaining high intelligence.\n • <b>DeepSeek V3.2</b> - <i>DeepSeek\'s</i> latest and most advanced model, delivering exceptional insight, creativity, and advanced code and reasoning.',
         'new_model' : '<b>Model successfully changed to {new_model}</b>',
         'menu' : '<b>Menu:</b>',
+        'support' : '<b>Support the N​o​d​e​X.​a​i project.</b>\n\n <b>N​o​d​e​X.​a​i</b> is a project, created with enthusiasm. It contains modern neural networks that anyone can use for free, without paid subscriptions or restrictions.\n\n If you like the project and want to contribute to its development, here are a few options.',
+        'ideas' : '<b>Suggest an idea</b>\n\nYou can suggest your idea in two ways:\n • <b>Send it by email:</b> nodex.project@gmail.com\n • <b>Send it as a message using the link:</b> t.me/NodeX_project?direct.\n\n<b>Each suggestion will be carefully considered. Thank you for helping us develop the project!</b>',
+        'bug_report' : '<b>Report a bug</b>\n\nYou can report a bug in two ways:\n • <b>Send it by email:</b> nodex.project@gmail.com\n • <b>Send it as a message using the link:</b> t.me/NodeX_project?direct.\n\n<b>Every bug will be carefully reviewed. Thank you for your help in developing the project!</b>',
         'change_model' : '<b>Select a model</b>',
         'change_language' : '<b>Select a language:</b>',
         'new_language' : '<b>Language successfully changed to:</b> <i>{lang}</i>',
@@ -62,7 +68,6 @@ ERRORS = {
         'api_err' : '❌ Произошла ошибка API. Скорее всего, что-то произошло с API или количество запросов данной модели за день было исчерпано. Вы можете попытаться сменить модель. Пожалуйста, направьте эту ошибку разработчику по ссылке t.me/NodeX_project?direct',
         # middleware/error_logging_middleware.py
         'error_in_handler' : '❌ Произошла ошибка. Пожалуйста, направьте ее разработчику по ссылке t.me/NodeX_project?direct',
-        'error_image_host' : '❌ Не удалось загрузить изображение. Пожалуйста, направьте эту ошибку разработчику по ссылке t.me/NodeX_project?direct',
     }
 }
 

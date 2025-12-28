@@ -128,3 +128,29 @@ def change_language_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
         builder.button(text = '⬅️ Back', callback_data = 'back_to_menu')
         builder.adjust(2)
         return builder.as_markup()
+
+def support_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
+    if language == 'ru':
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '💡 Предложить идею', callback_data = 'ideas')
+        builder.button(text = '⚠️ Сообщить об ошибке', callback_data = 'bug_report')
+        builder.adjust(2)
+        return builder.as_markup()
+    else: 
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '💡 Suggest an idea', callback_data = 'ideas')
+        builder.button(text = '⚠️ Report a bug', callback_data = 'bug_report')
+        builder.adjust(2)
+        return builder.as_markup()
+
+def back_to_support_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
+    if language == 'ru':
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '⬅️ Назад', callback_data = 'back_to_support')
+        builder.adjust(1)
+        return builder.as_markup()
+    else:
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '⬅️ Back', callback_data = 'back_to_support')
+        builder.adjust(1)
+        return builder.as_markup()
