@@ -15,7 +15,7 @@ from services.api_requests import openai
 from utils.logger import logger
 from utils.xmas_stickers import get_sticker
 from keyboards import keyboards
-from services.image_hosting import upload
+from services.image_hosting import upload, delete
 
 router = Router()
 
@@ -123,7 +123,7 @@ async def callback_change_language(callback: CallbackQuery) -> None:
 async def callback_change_image_model(callback: CallbackQuery) -> None:
     user_id = callback.from_user.id
     lang = await DB.get_user_language(user_id)
-    text = get_text('change_model', lang)
+    text = get_text('change_image_model', lang)
     await callback.message.edit_text(text, reply_markup = keyboards.image_models_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
@@ -151,11 +151,10 @@ async def callback_new_language(callback: CallbackQuery):
 async def callback_new_image_model(callback: CallbackQuery) -> None:
     user_id = callback.from_user.id
     lang = await DB.get_user_language(user_id)
-    user_id = callback.from_user.id
     model_alias = callback.data.split('_')[2]
     await DB.update_user_image_model(user_id, model_alias)
     model = get_model_display_name(model_alias)
-    text = get_text('new_model', lang, new_model = model)
+    text = get_text('new_image_model', language = lang, new_model = model)
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
@@ -179,11 +178,12 @@ async def callback_my_profile(callback: CallbackQuery) -> None:
     user_record = await DB.get_user(user_id)
     current_model_alias = user_record['current_model']
     current_model = get_model_display_name(current_model_alias)
+    current_image_model = get_model_display_name(user_record['image_model'])
     current_language = user_record['current_language']
     created_at = user_record['created_at']
     created_str = created_at.strftime("%d.%m.%Y %H:%M")
     message_count = await DB.get_user_message_count(user_id)
-    text = get_text('my_profile', current_language, id = user_id, current_model = current_model, message_count = message_count, created_str = created_str, lang = current_language)
+    text = get_text('my_profile', current_language, id = user_id, current_model = current_model, current_image_model = current_image_model, message_count = message_count, created_str = created_str, lang = current_language)
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
     await callback.answer()
 
@@ -324,9 +324,9 @@ async def handle_message(message: Message):
 
         context = await DB.get_user_recent_messages(user_id, model_alias)
         response = await openai.generate_response(message.text, model, context)
-        await DB.add_message(user_id, message.text, response, model_used=model_alias)
-        
         cleaned_response = cleaner.clean(response)
+        await DB.add_message(user_id, message.text, cleaned_response, model_alias)
+        
         if len(cleaned_response) > 4096:
             chunks = [cleaned_response[i:i+4096] for i in range(0, len(cleaned_response), 4096)]
             for chunk in chunks:
@@ -342,3 +342,74 @@ async def handle_message(message: Message):
         await message.answer(text, parse_mode = ParseMode.HTML)
     finally:
         await rate_limit.remove_processing_lock(user_id)
+
+
+@router.message(F.photo)
+async def handle_image_message(message: Message):
+    user_id = message.from_user.id
+    lang = await DB.get_user_language(user_id)
+    
+    remaining_time = await rate_limit.check_rate_limit(user_id)
+    if remaining_time > 0:
+        text = get_text('remaining_time', lang, remaining_time = remaining_time)
+        await message.answer(text, parse_mode = ParseMode.HTML)
+        return
+    
+    if await rate_limit.check_processing_lock(user_id):
+        text = get_text('request_processing', lang)
+        await message.answer(text, parse_mode = ParseMode.HTML)
+        return
+    
+    try:
+        await rate_limit.set_processing_lock(user_id)
+        await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
+
+        user = await DB.get_user(user_id)
+        model_alias = user['image_model']
+        model = MODELS[model_alias]
+
+        image = message.photo[-2] if len(message.photo) > 1 else message.photo[-1]
+        file_id = image.file_id
+        
+        file = await message.bot.get_file(file_id)
+        file_bytes_io = await message.bot.download_file(file.file_path)
+        file_bytes = file_bytes_io.getvalue()
+
+        image_url, delete_url = await upload(file_bytes)
+
+        if not image_url:
+            text = get_error('error_image_host')
+            await message.answer(text, parse_mode=ParseMode.HTML)
+            return
+        
+        prompt = message.caption
+        
+        if not prompt or prompt.strip() == '':
+            prompt = 'Опиши изображение' if lang == 'ru' else 'describe the image'
+        
+        message_with_image = f'{prompt} {image_url}'
+        context = await DB.get_user_recent_messages(user_id, model_alias, 2)
+        response = await openai.generate_response_from_image(model, prompt, image_url, context)
+        cleaned_response = cleaner.clean(response)
+        await DB.add_message(user_id, message_with_image, cleaned_response, model_alias)
+        if len(cleaned_response) > 4096:
+            chunks = [cleaned_response[i:i+4096] for i in range(0, len(cleaned_response), 4096)]
+            for chunk in chunks:
+                await message.answer(chunk)
+                await asyncio.sleep(1) 
+        else:
+            await message.answer(cleaned_response)
+
+        await rate_limit.set_rate_limit(user_id)
+    except Exception as e:
+        logger.error(f'Ошибка: {e}')
+        text = get_error('error_in_handler')
+        await message.answer(text, parse_mode = ParseMode.HTML)
+    finally:
+        if delete_url:
+            try:
+                await delete(delete_url)
+            except Exception as delete_error:
+                logger.error(f"[!] Не удалось удалить изображение: {delete_error}")
+        await rate_limit.remove_processing_lock(user_id)
+
