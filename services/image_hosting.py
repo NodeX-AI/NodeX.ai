@@ -1,54 +1,75 @@
+import asyncio
+import time
 from typing import Optional
+import uuid
 import aiohttp
 from config.config import *
 import random
 import string
 from utils.logger import logger
 
-
-async def upload(file_bytes: bytes) -> Optional[str]:
+async def upload(file_bytes: bytes):
     try:
-        url = IMAGE_HOSTING_URL
+        url = RADIKAL_CLOUD_URL
         
         if hasattr(file_bytes, 'getvalue'):
             file_data = file_bytes.getvalue()
         else:
             file_data = file_bytes
         
-        boundary = '----WebKitFormBoundary' + ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+        unique_filename = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
         
-        data = (
-            f'--{boundary}\r\n'
-            f'Content-Disposition: form-data; name="source"; filename="image.jpg"\r\n'
-            f'Content-Type: image/jpeg\r\n\r\n'
-        ).encode() + file_data + (
-            f'\r\n--{boundary}\r\n'
-            f'Content-Disposition: form-data; name="key"\r\n\r\n{IMAGE_HOSTING_KEY}\r\n'
-            f'--{boundary}\r\n'
-            f'Content-Disposition: form-data; name="action"\r\n\r\nupload\r\n'
-            f'--{boundary}\r\n'
-            f'Content-Disposition: form-data; name="format"\r\n\r\njson\r\n'
-            f'--{boundary}--\r\n'
-        ).encode()
-        
+        form = aiohttp.FormData()
+        form.add_field(
+            name='source',
+            value=file_data,
+            filename=unique_filename,
+            content_type='image/jpeg'
+        )
+
         headers = {
-            'Content-Type': f'multipart/form-data; boundary={boundary}'
+            'X-API-Key': RADIKAL_CLOUD_KEY,
         }
+
+        timeout = aiohttp.ClientTimeout(
+            total=90,
+            connect=15,
+            sock_read=75
+        )
         
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, data=data, headers=headers, timeout=60) as response:
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(url, data=form, headers=headers) as response:
                 if response.status == 200:
                     result = await response.json()
-                    if result.get('success'):
-                        return result['image']['url']
+                    if result.get('status_code') == 200:
+                        return result['image']['url'], result['image']['delete_url']
                     else:
-                        logger.error(f"[!] Ошибка freeimage.host: {result.get('error', 'Unknown error')}")
-                        return None
+                        error_msg = result.get('error', {}).get('message', 'Unknown error')
+                        logger.error(f"[!] Ошибка API Radikal Cloud: {error_msg}")
+                        return None, None
                 else:
                     error_text = await response.text()
-                    logger.error(f"[!] Ошибка HTTP {response.status}: {error_text}")
-                    return None
+                    logger.error(f"[!] Ошибка HTTP: {response.status}: {error_text}")
+                    return None, None
                     
+    except asyncio.TimeoutError:
+        logger.error(f"[!] Таймаут загрузки изображения")
+        return None, None
+    except aiohttp.ClientError as e:
+        logger.error(f"[!] Ошибка сети: {e}")
+        return None, None
     except Exception as e:
-        logger.error(f"[!] Неожиданная ошибка при загрузке: {e}")
-        return None
+        logger.error(f"[!] Ошибка загрузки: {e}")
+        return None, None
+    
+async def delete(delete_url: str) -> bool:
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(delete_url) as response:
+                if response.status == 200:
+                    return True
+                else:
+                    return False
+    except Exception as e:
+        logger.error(f"[!] Ошибка при удалении: {e}")
+        return False

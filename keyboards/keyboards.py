@@ -58,6 +58,24 @@ def text_models_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
         builder.adjust(2)
         return builder.as_markup()
 
+def image_models_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
+    if language == 'ru':
+        builder = InlineKeyboardBuilder()
+        builder.button(text = 'Grok 4 fast', callback_data = 'image_model_grok4fast')
+        builder.button(text = 'GPT 5 mini', callback_data = 'image_model_gpt5mini')
+        builder.button(text = 'Gemini 3 flash preview', callback_data = 'image_model_gemini3flashprev')
+        builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
+        builder.adjust(2)
+        return builder.as_markup()
+    else:
+        builder = InlineKeyboardBuilder()
+        builder.button(text = 'Grok 4 fast', callback_data = 'image_model_grok4fast')
+        builder.button(text = 'GPT 5 mini', callback_data = 'image_model_gpt5mini')
+        builder.button(text = 'Gemini 3 flash preview', callback_data = 'image_model_gemini3flashprev')
+        builder.button(text = '⬅️ Back to menu', callback_data = 'back_to_menu')
+        builder.adjust(2)
+        return builder.as_markup()
+
 def back_to_menu_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
     if language == 'ru':
         builder = InlineKeyboardBuilder()
@@ -125,9 +143,9 @@ def delete_account_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
 def menu_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
     if language == 'ru':
         builder = InlineKeyboardBuilder()
-
         builder.button(text = '🤖 Доступные модели', callback_data = 'models')
-        builder.button(text = '❄️ Изменить текстовую модель', callback_data = 'change_text_model')
+        builder.button(text = '❄️ Текстовые модели', callback_data = 'change_text_model')
+        builder.button(text = '🎇 Модели для распознавания изображений', callback_data = 'change_image_model')
         builder.button(text = '🦌 Сменить язык интерфейса', callback_data = 'change_language')
         builder.button(text = '🎅 Мой профиль', callback_data = 'my_profile')
         builder.button(text = '☃️ Статистика', callback_data = 'statistics')
@@ -141,7 +159,8 @@ def menu_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
     else:
         builder = InlineKeyboardBuilder()
         builder.button(text = '🤖 Available models', callback_data = 'models')
-        builder.button(text = '❄️ Change the text model', callback_data = 'change_text_model')
+        builder.button(text = '❄️ Text models', callback_data = 'change_text_model')
+        builder.button(text = '🎇 Models for image recognition', callback_data = 'change_image_model')
         builder.button(text = '🦌 Change interface language', callback_data = 'change_language')
         builder.button(text = '🎅 My profile', callback_data = 'my_profile')
         builder.button(text = '☃️ Statistics', callback_data = 'statistics')

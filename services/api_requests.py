@@ -67,7 +67,8 @@ class OpenAI_API_Service:
         model_config = self._get_text_model_config(model)
         messages = []
         if context:
-            for user_msg, ai_msg in context:
+            reversed_context = context[::-1]
+            for user_msg, ai_msg in reversed_context:
                 messages.extend([
                 {
                     "role": "user", 
@@ -107,6 +108,67 @@ class OpenAI_API_Service:
                         error = get_error('api_err')
                         return error
                         
+            except aiohttp.ClientError as e:
+                logger.error(f'[!] Ошибка сети: ({model}): {e}')
+                return f'❌ Ошибка сети'
+            except asyncio.TimeoutError:
+                logger.warning(f'[-] Таймаут: ({model})')
+                error = get_error('timeout')
+                return error
+            except Exception as e:
+                logger.error(f'[!] Непредвиденная ошибка: {e} | Модель: {model}')
+                error = get_error('unexpected')
+                return error
+    async def generate_response_from_image(self, model: str, prompt: str, image_url: str, context):
+        model_config = self._get_text_model_config(model)
+        messages = []
+        if context:
+            reversed_context = context[::-1]
+            for user_msg, ai_msg in reversed_context:
+                messages.extend([
+                    {
+                    "role": "user", 
+                    "content": user_msg  
+                    },
+                    {
+                    "role": "assistant", 
+                    "content": ai_msg 
+                    }
+                ])
+        messages.append({
+            "role": "user",
+            "content" : [
+                {
+                    "type" : "text",
+                    "text" : prompt
+                },
+                {
+                    "type" : "image_url",
+                    "image_url" : {"url" : image_url}
+                }
+            ],
+        })
+        payload = {
+            "model" : model,
+            "messages" : messages 
+        }
+
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.post(
+                    f"{model_config['base_url']}",
+                    headers=model_config['headers'],
+                    json=payload,
+                    timeout=120
+                ) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return data['choices'][0]['message']['content']
+                    else:
+                        error_text = await response.text()
+                        logger.error(f'[!] Ошибка API | Модель: {model} | Статус и ошибка: {response.status} - {error_text}')
+                        error = get_error('api_err')
+                        return error
             except aiohttp.ClientError as e:
                 logger.error(f'[!] Ошибка сети: ({model}): {e}')
                 return f'❌ Ошибка сети'
