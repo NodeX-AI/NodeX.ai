@@ -15,7 +15,7 @@ from services.api_requests import openai
 from utils.logger import logger
 from utils.xmas_stickers import get_sticker
 from keyboards import keyboards
-from services.image_hosting import upload, delete
+from services.s3_storage import *
 
 router = Router()
 
@@ -375,7 +375,7 @@ async def handle_image_message(message: Message):
         file_bytes_io = await message.bot.download_file(file.file_path)
         file_bytes = file_bytes_io.getvalue()
 
-        image_url, delete_url = await upload(file_bytes)
+        image_url = await upload_to_s3(file_bytes)
 
         if not image_url:
             text = get_error('error_image_host')
@@ -385,7 +385,7 @@ async def handle_image_message(message: Message):
         prompt = message.caption
         
         if not prompt or prompt.strip() == '':
-            prompt = 'Опиши изображение' if lang == 'ru' else 'describe the image'
+            prompt = 'Опиши изображение' if lang == 'ru' else 'Describe the image'
         
         message_with_image = f'{prompt} {image_url}'
         context = await DB.get_user_recent_messages(user_id, model_alias, 2)
@@ -406,10 +406,9 @@ async def handle_image_message(message: Message):
         text = get_error('error_in_handler')
         await message.answer(text, parse_mode = ParseMode.HTML)
     finally:
-        if delete_url:
+        if image_url:
             try:
-                await delete(delete_url)
+                await delete_from_s3(image_url)
             except Exception as delete_error:
                 logger.error(f"[!] Не удалось удалить изображение: {delete_error}")
         await rate_limit.remove_processing_lock(user_id)
-

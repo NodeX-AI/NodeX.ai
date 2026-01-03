@@ -34,5 +34,9 @@ DEEPSEEK_V3_URL = os.getenv('DEEPSEEK_V3_URL')
 
 AES_KEY = os.getenv('AES_KEY')
 
-RADIKAL_CLOUD_KEY = os.getenv('RADIKAL_CLOUD_API_KEY')
-RADIKAL_CLOUD_URL = os.getenv('RADIKAL_CLOUD_URL')
+S3_URL = os.getenv('S3_URL')
+BUCKET_NAME = os.getenv('BUCKET_NAME')
+S3_ACCESS_KEY = os.getenv('S3_ACCESS_KEY')
+S3_SECRET_KEY = os.getenv('S3_SECRET_KEY')
+REGION_NAME = os.getenv('REGION_NAME')
+S3_URL_DOMAIN = os.getenv('S3_URL_DOMAIN')
