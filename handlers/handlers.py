@@ -6,15 +6,18 @@ from aiogram.enums import ChatAction
 import asyncio
 
 from database.postgres import DB
-from utils.messages import get_text, get_warn, get_error
+from utils.messages import get_text, get_error, get_prompt_all, get_prompt
 from utils.md_cleaner import cleaner
 from utils.decorators import rate_limit_commands, rate_limit_callbacks
 from services import rate_limit
-from utils.models import MODELS, get_model_display_name, OpenAI_API_Models
+from utils.models import MODELS, get_model_display_name
 from services.api_requests import openai
 from utils.logger import logger
 from keyboards import keyboards
 from services.s3_storage import *
+
+from aiogram.fsm.context import FSMContext
+from utils.states import PromptStates
 
 router = Router()
 
@@ -92,6 +95,152 @@ async def callback_models(callback: CallbackQuery) -> None:
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
     await callback.answer()
 
+@router.callback_query(F.data == 'prompt')
+@rate_limit_callbacks()
+async def callback_prompt(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('prompt', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.prompt_keyboard(language = lang), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data.startswith('prompt_'))
+@rate_limit_callbacks()
+async def callback_prompt_actions(callback: CallbackQuery, state: FSMContext) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    action = callback.data.split('_')[1]
+    try:
+        if action == 'set':
+            current_prompt = await DB.get_user_prompt(user_id)
+            text = get_text('prompt_set', lang, prompt = current_prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.cancel_prompt_keyboard(language = lang), parse_mode = ParseMode.HTML)
+            await state.set_state(PromptStates.waiting_for_prompt)
+        elif action == 'reset':
+            new_prompt = ''
+            await DB.update_user_system_prompt(user_id, new_prompt)
+            new_prompt = 'Не установлен' if lang == 'ru' else 'Not installed'
+            text = get_text('new_prompt', lang, prompt = new_prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
+        elif action == 'templates':
+            text = get_text('prompt_templates', lang)
+            await callback.message.edit_text(text, reply_markup = keyboards.prompt_templates_keyboard(language = lang), parse_mode = ParseMode.HTML)
+        else: # guide
+            text = get_text('prompt_guide', lang)
+            await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(lang), parse_mode = ParseMode.HTML)
+    finally:
+        await callback.answer()
+
+@router.callback_query(F.data.startswith('template_'))
+@rate_limit_callbacks()
+async def callback_template_prompt(callback: CallbackQuery) -> None:
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    prompt_name = callback.data.split('_')[1]
+    try:
+        if prompt_name == 'exams':
+            name, prompt, description = get_prompt_all(prompt_name, lang)
+            text = get_text('prompt_template_message', lang, name = name, desc = description, text = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.set_template_keyboard(prompt_name, lang), parse_mode = ParseMode.HTML)
+        elif prompt_name == 'corrector':
+            name, prompt, description = get_prompt_all(prompt_name, lang)
+            text = get_text('prompt_template_message', lang, name = name, desc = description, text = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.set_template_keyboard(prompt_name, lang), parse_mode = ParseMode.HTML)
+        elif prompt_name == 'brainstorm':
+            name, prompt, description = get_prompt_all(prompt_name, lang)
+            text = get_text('prompt_template_message', lang, name = name, desc = description, text = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.set_template_keyboard(prompt_name, lang), parse_mode = ParseMode.HTML)
+        elif prompt_name == 'detail':
+            name, prompt, description = get_prompt_all(prompt_name, lang)
+            text = get_text('prompt_template_message', lang, name = name, desc = description, text = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.set_template_keyboard(prompt_name, lang), parse_mode = ParseMode.HTML)
+        elif prompt_name == 'laconic':
+            name, prompt, description = get_prompt_all(prompt_name, lang)
+            text = get_text('prompt_template_message', lang, name = name, desc = description, text = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.set_template_keyboard(prompt_name, lang), parse_mode = ParseMode.HTML)
+        else: #critical-thinking
+            name, prompt, description = get_prompt_all(prompt_name, lang)
+            text = get_text('prompt_template_message', lang, name = name, desc = description, text = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.set_template_keyboard(prompt_name, lang), parse_mode = ParseMode.HTML)
+    finally:
+        await callback.answer()
+
+@router.callback_query(F.data.startswith('set_template_'))
+@rate_limit_callbacks()
+async def callback_set_template(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    template = callback.data.split('_')[2]
+    try:
+        if template == 'exams':
+            prompt = get_prompt('text', template, lang)
+            await DB.update_user_system_prompt(user_id, prompt)
+            text = get_text('new_prompt', lang, prompt = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(lang), parse_mode = ParseMode.HTML)
+        elif template == 'corrector':
+            prompt = get_prompt('text', template, lang)
+            await DB.update_user_system_prompt(user_id, prompt)
+            text = get_text('new_prompt', lang, prompt = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(lang), parse_mode = ParseMode.HTML)
+        elif template == 'brainstorm':
+            prompt = get_prompt('text', template, lang)
+            await DB.update_user_system_prompt(user_id, prompt)
+            text = get_text('new_prompt', lang, prompt = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(lang), parse_mode = ParseMode.HTML)
+        elif template == 'detail':
+            prompt = get_prompt('text', template, lang)
+            await DB.update_user_system_prompt(user_id, prompt)
+            text = get_text('new_prompt', lang, prompt = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(lang), parse_mode = ParseMode.HTML)
+        elif template == 'laconic':
+            prompt = get_prompt('text', template, lang)
+            await DB.update_user_system_prompt(user_id, prompt)
+            text = get_text('new_prompt', lang, prompt = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(lang), parse_mode = ParseMode.HTML)
+        else: #critical-thinking
+            prompt = get_prompt('text', template, lang)
+            await DB.update_user_system_prompt(user_id, prompt)
+            text = get_text('new_prompt', lang, prompt = prompt)
+            await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(lang), parse_mode = ParseMode.HTML)
+    finally:
+        callback.answer()
+
+@router.message(PromptStates.waiting_for_prompt)
+async def process_new_prompt(message: Message, state: FSMContext) -> None:
+    user_id = message.from_user.id
+    lang = await DB.get_user_language(user_id)
+    message_len = len(message.text)
+    if message_len > 600:
+        text = get_text('long_prompt', lang, length = message_len)
+        await message.answer(text, reply_markup = keyboards.cancel_prompt_keyboard(language = lang), parse_mode = ParseMode.HTML)
+        return
+    new_prompt = message.text.strip()
+    await DB.update_user_system_prompt(user_id, new_prompt)
+    text = get_text('new_prompt', language = lang, prompt = new_prompt)
+    await message.answer(text, reply_markup = keyboards.back_to_menu_keyboard(language = lang), parse_mode = ParseMode.HTML)
+    await state.clear()
+
+@router.callback_query(F.data == 'cancel_prompt')
+@rate_limit_callbacks()
+async def callback_cancel_prompt(callback: CallbackQuery, state: FSMContext) -> None:
+    current_state = await state.get_state()
+    if current_state == PromptStates.waiting_for_prompt:
+        await state.clear()
+        user_id = callback.from_user.id
+        lang = await DB.get_user_language(user_id)
+        text = get_text('cancel_prompt', lang)
+        await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(lang), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
+@router.callback_query(F.data == 'back_to_templates')
+@rate_limit_callbacks()
+async def callback_back_to_templates(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    lang = await DB.get_user_language(user_id)
+    text = get_text('prompt_templates', lang)
+    await callback.message.edit_text(text, reply_markup = keyboards.prompt_templates_keyboard(language = lang), parse_mode = ParseMode.HTML)
+    await callback.answer()
+
 @router.callback_query(F.data == 'change_language')
 @rate_limit_callbacks()
 async def callback_change_language(callback: CallbackQuery) -> None:
@@ -163,10 +312,12 @@ async def callback_my_profile(callback: CallbackQuery) -> None:
     current_model = get_model_display_name(current_model_alias)
     current_image_model = get_model_display_name(user_record['image_model'])
     current_language = user_record['current_language']
+    prompt = user_record['system_prompt']
+    prompt = prompt if prompt else 'Не установлен' if current_language == 'ru' else 'Not installed'
     created_at = user_record['created_at']
     created_str = created_at.strftime("%d.%m.%Y %H:%M")
     message_count = await DB.get_user_message_count(user_id)
-    text = get_text('my_profile', current_language, id = user_id, current_model = current_model, current_image_model = current_image_model, message_count = message_count, created_str = created_str, lang = current_language)
+    text = get_text('my_profile', current_language, id = user_id, current_model = current_model, current_image_model = current_image_model, prompt = prompt, message_count = message_count, created_str = created_str, lang = current_language)
     await callback.message.edit_text(text, reply_markup = keyboards.back_to_menu_keyboard(), parse_mode = ParseMode.HTML)
     await callback.answer()
 
@@ -304,9 +455,10 @@ async def handle_message(message: Message):
         user = await DB.get_user(user_id)
         model_alias = user['current_model'] # We get the model alias from the database
         model = MODELS[model_alias] # convert the alias to a real name
+        prompt = await DB.get_user_prompt(user_id)
 
         context = await DB.get_user_recent_messages(user_id, model_alias)
-        response = await openai.generate_response(message.text, model, context)
+        response = await openai.generate_response(message.text, model, context, prompt)
         cleaned_response = cleaner.clean(response)
         await DB.add_message(user_id, message.text, cleaned_response, model_alias)
         
@@ -365,14 +517,15 @@ async def handle_image_message(message: Message):
             await message.answer(text, parse_mode=ParseMode.HTML)
             return
         
-        prompt = message.caption
+        mes = message.caption
         
-        if not prompt or prompt.strip() == '':
-            prompt = 'Опиши изображение' if lang == 'ru' else 'Describe the image'
+        if not mes or mes.strip() == '':
+            mes = 'Опиши изображение' if lang == 'ru' else 'Describe the image'
         
-        message_with_image = f'{prompt} {image_url}'
+        message_with_image = f'{mes} {image_url}'
         context = await DB.get_user_recent_messages(user_id, model_alias, 2)
-        response = await openai.generate_response_from_image(model, prompt, image_url, context)
+        prompt = await DB.get_user_prompt(user_id)
+        response = await openai.generate_response_from_image(model, mes, image_url, context, prompt)
         cleaned_response = cleaner.clean(response)
         await DB.add_message(user_id, message_with_image, cleaned_response, model_alias)
         if len(cleaned_response) > 4096:

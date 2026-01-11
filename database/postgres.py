@@ -37,6 +37,10 @@ class PostgresDB:
         async with self.pool.acquire() as conn:
             await conn.execute("UPDATE users SET image_model = $1 WHERE telegram_id = $2", new_model, telegram_id)
     
+    async def update_user_system_prompt(self, telegram_id: int, new_prompt: str) -> None:
+        async with self.pool.acquire() as conn:
+            await conn.execute("UPDATE users SET system_prompt = $1 WHERE telegram_id = $2", new_prompt, telegram_id)
+    
     async def get_user_model(self, telegram_id: int) -> Optional[str]: #
         async with self.pool.acquire() as conn:
             return await conn.fetchval("SELECT current_model FROM users WHERE telegram_id = $1", telegram_id)
@@ -44,6 +48,10 @@ class PostgresDB:
     async def get_user_language(self, telegram_id: int):
         async with self.pool.acquire() as conn:
             return await conn.fetchval("SELECT current_language FROM users WHERE telegram_id = $1", telegram_id)
+        
+    async def get_user_prompt(self, telegram_id: int):
+        async with self.pool.acquire() as conn:
+            return await conn.fetchval("SELECT system_prompt FROM users WHERE telegram_id = $1", telegram_id)
     
     async def get_user_image_model(self, telegram_id: int) -> Optional[str]:
         async with self.pool.acquire() as conn:
