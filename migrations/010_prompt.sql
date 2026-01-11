@@ -1,0 +1,2 @@
+ALTER TABLE users 
+ADD COLUMN IF NOT EXISTS system_prompt TEXT DEFAULT '';

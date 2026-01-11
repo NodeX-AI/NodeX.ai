@@ -2,7 +2,78 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup
 import urllib
 from utils.share_text import get_share_text
-    
+
+
+def set_template_keyboard(template_key : str, language: str = 'ru') -> InlineKeyboardMarkup:
+    callback = f'set_template_{template_key}'
+    if language == 'ru':
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '✅ Установить', callback_data = callback)
+        builder.button(text = '⬅️ Назад к шаблонам', callback_data = 'back_to_templates')
+        builder.adjust(1)
+        return builder.as_markup()
+    else:
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '✅ Install', callback_data = callback)
+        builder.button(text = '⬅️ Back to templates', callback_data = 'back_to_templates')
+        builder.adjust(1)
+        return builder.as_markup()
+
+def prompt_templates_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
+    if language == 'ru':
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '📚 Подготовка к экзаменам', callback_data = 'template_exams')
+        builder.button(text = '✏️ Корректор', callback_data = 'template_corrector')
+        builder.button(text = '🧠 Мозговой штурм', callback_data = 'template_brainstorm')
+        builder.button(text = '🔍 Детальный анализ', callback_data = 'template_detail')
+        builder.button(text = '🎯 Лаконичный', callback_data = 'template_laconic')
+        builder.button(text = '🤔 Критическое мышление', callback_data = 'template_critical-thinking')
+        builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
+        builder.adjust(2)
+        return builder.as_markup()
+    else:
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '📚 Exam preparation', callback_data = 'template_exams')
+        builder.button(text = '✏️ Corrector', callback_data = 'template_corrector')
+        builder.button(text = '🧠 Brainstorm', callback_data = 'template_brainstorm')
+        builder.button(text = '🔍 Detailed analysis', callback_data = 'template_detail')
+        builder.button(text = '🎯 Laconic', callback_data = 'template_laconic')
+        builder.button(text = '🤔 Critical thinking', callback_data = 'template_critical-thinking')
+        builder.button(text = '⬅️ Back to menu', callback_data = 'back_to_menu')
+        builder.adjust(2)
+        return builder.as_markup()
+
+def cancel_prompt_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
+    if language == 'ru':
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '✖️ Отменить', callback_data = 'cancel_prompt')
+        builder.adjust(1)
+        return builder.as_markup()
+    else:
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '✖️ Cancel', callback_data = 'cancel_prompt')
+        builder.adjust(1)
+        return builder.as_markup()
+
+def prompt_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
+    if language == 'ru':
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '📝 Изменить промпт', callback_data = 'prompt_set')
+        builder.button(text = '🗑️ Сбросить промпт', callback_data = 'prompt_reset')
+        builder.button(text = '📚 Шаблоны', callback_data = 'prompt_templates')
+        builder.button(text = '💡 Руководство', callback_data = 'prompt_guide') 
+        builder.button(text = '⬅️ Назад в меню', callback_data = 'back_to_menu')
+        builder.adjust(2)
+        return builder.as_markup()
+    else:
+        builder = InlineKeyboardBuilder()
+        builder.button(text = '📝 Change prompt', callback_data = 'prompt_set')
+        builder.button(text = '🗑️ Reset prompt', callback_data = 'prompt_reset')
+        builder.button(text = '📚 Templates', callback_data = 'prompt_templates')
+        builder.button(text = '💡 Guide', callback_data = 'prompt_guide') 
+        builder.button(text = '⬅️ Back to menu', callback_data = 'back_to_menu')
+        builder.adjust(2)
+        return builder.as_markup()
 
 def text_models_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
     if language == 'ru':
@@ -110,6 +181,7 @@ def menu_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
     if language == 'ru':
         builder = InlineKeyboardBuilder()
         builder.button(text = '🤖 Доступные модели', callback_data = 'models')
+        builder.button(text = '⚙️ Промпт', callback_data = 'prompt')
         builder.button(text = '📝 Текстовые модели', callback_data = 'change_text_model')
         builder.button(text = '🖼️ Модели для распознавания изображений', callback_data = 'change_image_model')
         builder.button(text = '🔄 Сменить язык интерфейса', callback_data = 'change_language')
@@ -124,6 +196,7 @@ def menu_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
     else:
         builder = InlineKeyboardBuilder()
         builder.button(text = '🤖 Available models', callback_data = 'models')
+        builder.button(text = '⚙️ Prompt', callback_data = 'prompt')
         builder.button(text = '📝 Text models', callback_data = 'change_text_model')
         builder.button(text = '🖼️ Models for image recognition', callback_data = 'change_image_model')
         builder.button(text = '🔄 Change interface language', callback_data = 'change_language')

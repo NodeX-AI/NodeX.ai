@@ -63,9 +63,13 @@ class OpenAI_API_Service:
                 "headers" : self.gemini3flashpreview_headers
             }
     
-    async def generate_response(self, message: str, model: str, context: list = None) -> str:
+    async def generate_response(self, message: str, model: str, context: list = None, prompt: str = '') -> str:
         model_config = self._get_text_model_config(model)
         messages = []
+        messages.append({
+            "role": "system",
+            "content": prompt  
+        })
         if context:
             reversed_context = context[::-1]
             for user_msg, ai_msg in reversed_context:
@@ -119,9 +123,13 @@ class OpenAI_API_Service:
                 logger.error(f'[!] Непредвиденная ошибка: {e} | Модель: {model}')
                 error = get_error('unexpected')
                 return error
-    async def generate_response_from_image(self, model: str, prompt: str, image_url: str, context):
+    async def generate_response_from_image(self, model: str, message: str, image_url: str, context, prompt: str = ''):
         model_config = self._get_text_model_config(model)
         messages = []
+        messages.append({
+            "role": "system",
+            "content": prompt  
+        })
         if context:
             reversed_context = context[::-1]
             for user_msg, ai_msg in reversed_context:
@@ -140,7 +148,7 @@ class OpenAI_API_Service:
             "content" : [
                 {
                     "type" : "text",
-                    "text" : prompt
+                    "text" : message
                 },
                 {
                     "type" : "image_url",
