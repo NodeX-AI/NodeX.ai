@@ -4,6 +4,16 @@ MESSAGES = {
         'info' : '<b>N​o​d​e​X.​a​i</b> — проект с открытым исходным кодом, основателем и разработчиком которого является @ghostfaccee.\n\n<b>У проекта имеется лицензия AGPL-3.0</b>, это значит, что он является свободным программным обеспечением, и все его производные версии, включая облачные сервисы, также должны распространяться с открытым кодом.\n\n<b>Этот бот является оригинальным и вы можете доверять ему</b>, так как он неразрывно связан с <a href="https://github.com/NodeX-AI/NodeX.ai">открытым официальным репозиторием</a>.\n\n<b>Ваша переписка с нейросетевой моделью надежно шифруется алгоритмом AES-256-GCM и сохраняется в базе данных</b> <a href="https://telegra.ph/Politika-konfidencialnosti-telegram-bota-NodeXai-11-01">(см. Политику конфиденциальности)</a>.\n\n<b>Сервис предоставляется "как есть" (AS IS). Полные условия, включая ограничение ответственности и правила использования, изложены в</b> <a href="https://telegra.ph/POLZOVATELSKOE-SOGLASHENIE-telegarm-bota-NodeXai-11-01">Пользовательском соглашении</a> <b>и</b> <a href="https://telegra.ph/OGRANICHENIE-OTVETSTVENNOSTI-telegram-bota-NodeXai-11-01">Политике ограничения ответственности</a>.\n\n<b>Вы в полном праве удалить свой аккаунт и отозвать принятые соглашения, используя раздел "Опасная зона" в меню: /menu</b>',
         'faq' : '<b>Ответы на часто задаваемые вопросы вы можете посмотреть по <a href="https://telegra.ph/CHaVo--Telegram-bot-NodeXai-11-01">ссылке</a></b>',
         'models' : '<b>Список доступных моделей:</b>\n • <b>GPT-5 mini</b> - высокоскоростная и мощная компактная модель нового поколения от <i>OpenAI</i>, созданная для мгновенного решения сложных задач с высочайшей точностью.\n • <b>Grok 4 fast</b> - высокоскоростная языковая модель от компании <i>xAI</i>, принадлежащей <b>Илону Маску</b>, оптимизированная для быстрого генеративного взаимодействия.\n • <b>Gemini 3 Flash Preview</b> - самая быстрая и эффективная модель в семействе Gemini от <i>Google</i>, идеальная для задач, требующих почти мгновенного отклика при сохранении высокого интеллектуального уровня.\n • <b>DeepSeek V3.2</b> - новейшая и самая продвинутая модель от компании <i>DeepSeek</i>, предлагающая исключительную глубину понимания, креативность и расширенные возможности работы с кодом и рассуждениями.',
+        
+        'prompt' : '<b>Системный промпт</b>\n\n<b>Промпт</b> - это \"текстовая инструкция\" для нейросети, которая задает стиль всех ответов.\n\n<b>Как работает:</b>\n • Добавляется ко всем моделям\n • Влияет на стиль ответов\n • Работает с текстом и изображениями\n • Не заменяет, а дополняет системные настройки моделей\n\nЕсли промпт не установлен - нейросеть отвечает стандартно.',
+        'prompt_set' : '<b>Изменить промпт</b>\n\n<b>Ваш текущий промпт:</b> {prompt}\n\nОтправьте новый текст (макс. 600 символов) или нажмите кнопку ниже для отмены',
+        'long_prompt' : '<b>Ваш промпт слишком длинный.</b> Максимальная длина промпта: 600 символов. Количество символов в вашем промпте: {length}. Попробуйте еще раз или отмените действие.',
+        'new_prompt' : '<b>Ваш новый промпт успешно установлен</b>\nТекущий промпт: {prompt}',
+        'cancel_prompt' : '<b>Изменение промпта отменено</b>',
+        'prompt_templates' : '<b>Шаблоны промптов</b>\n\nГотовые настройки N​o​d​e​X.​a​i для разных задач. Выберите - и нейросеть сразу начнет работать в этом режиме.',
+        'prompt_template_message' : '<b>Промпт \"{name}\"</b>\n\n<b>Описание:</b> {desc}\n\n<b>Текст промпта:</b> {text}',
+        'prompt_guide' : 'Руководство по написанию промпта вы можете посмотреть по <a href="https://telegra.ph/Rukovodstvo-po-sostavleniyu-sistemnyh-promptov-NodeXai-01-11">ссылке</a>',
+
         'change_model' : '<b>Выберите текстовую модель:</b>',
         'change_image_model' : '<b>Выберите модель для распознавания изображений:</b>',
         'new_image_model' : '<b>Модель для распознавания изображений успешно изменена на:</b> {new_model}',
@@ -15,9 +25,9 @@ MESSAGES = {
         'bug_report' : '<b>Сообщить об ошибке</b>\n\nВы можете сообщить об ошибке двумя способами:\n • <b>Отправить ее на почту:</b> nodex.project@gmail.com\n • <b>Отправить ее сообщением по ссылке:</b> t.me/NodeX_project?direct.\n\n<b>Каждый недочет будет внимательно изучен. Спасибо за помощь в развитии проекта!</b>',
         'change_language' : '<b>Выберите язык:</b>',
         'new_language' : '<b>Язык успешно изменен на:</b> <i>{lang}</i>',
-        'my_profile' : '<b>Ваш профиль</b>\n • <b>ID:</b> <tg-spoiler>{id}</tg-spoiler>\n • <b>Текущая текстовая модель:</b> <i>{current_model}</i>\n • <b>Текущая модель для распознавания изображений:</b> <i>{current_image_model}</i>\n • <b>Количество сообщений:</b> <i>{message_count}</i>\n • <b>Зарегистрирован:</b> <i>{created_str}</i>\n • <b>Язык:</b> <i>{lang}</i>',
+        'my_profile' : '<b>Ваш профиль</b>\n • <b>ID:</b> <tg-spoiler>{id}</tg-spoiler>\n • <b>Текущая текстовая модель:</b> <i>{current_model}</i>\n • <b>Текущая модель для распознавания изображений:</b> <i>{current_image_model}</i>\n • <b>Текущий промпт:</b> <i>{prompt}</i>\n • <b>Количество сообщений:</b> <i>{message_count}</i>\n • <b>Зарегистрирован:</b> <i>{created_str}</i>\n • <b>Язык:</b> <i>{lang}</i>',
         'statistics' : '<b>Глобальная статистика:</b>\n • <b>Зарегистрированных пользователей:</b> {total_users}\n • <b>Всего сообщений:</b> {total_messages}\n • <b>Популярная модель:</b> {popular_model}',
-        'changelog' : '<b>Журнал недавних изменений</b>\n\n <b>Текущая версия: v3.1 - 03.01.2026</b>\n  • Интеграция с S3-хранилищем - замена сторонних хостингов на собственное хранилище\n  • Повышена стабильность работы сервиса - переход на S3-хранилище свел ошибки, связанные с загрузкой изображений, к минимуму\n\n <b>Предыдущая версия: v3.0 - 02.01.2026</b>\n  • Переписаны все функции обработки изображений\n  • Проект перешел на более надежный хостинг изображений\n  • Теперь нейросети поддерживают историю диалога при отправке изображений (а вот в наше время такого не было)\n  • Процесс загрузки изображений на хостинг был оптимизирован\n  • Исправлены все баги предыдущих версий\n\n <b>Следите за новостями:</b> @NodeX_project',
+        'changelog' : '<b>Журнал недавних изменений</b>\n\n <b>Текущая версия: v3.2 - 11.01.2026</b>\n  • Добавлена поддержка системных промтов\n  • Добавлено 6 различных шаблонов промптов\n\n <b>Предыдущая версия: v3.1 - 03.01.2026</b>\n  • Интеграция с S3-хранилищем - замена сторонних хостингов на собственное хранилище\n  • Повышена стабильность работы сервиса - переход на S3-хранилище свел ошибки, связанные с загрузкой изображений, к минимуму\n\n <b>Следите за новостями:</b> @NodeX_project',
         'friends' : '<b>Рассказать друзьям</b>\n\n <b>Почему это важно?</b>\n Каждый новый зарегистрированный пользователь мотивирует меня развивать этот проект дальше, а также помогает сделать этот проект лучше: новые пользователи могу предложить идею или найти ошибку, что тоже очень ценно.\n\n <b>Как поделиться?</b>\n Нажмите кнопку ниже и выберите друзей в Telegram.\n\n <b>Спасибо за помощь в развитии проекта!</b>',
         
         'danger_zone' : '<b>Опасная зона. Будьте аккуратнее с выбором.</b>',
@@ -36,6 +46,16 @@ MESSAGES = {
         'info' : '<b>N​o​d​e​X.​a​i</b> is an open-source project founded and developed by @ghostfaccee.\n\n<b>The project is licensed under the AGPL-3.0 license</b>, meaning it is free software, and all derivative versions of it, including cloud services, must also be distributed as open source.\n\n<b>This bot is original and you can trust it</b>, as it is inextricably linked to the <a href="https://github.com/NodeX-AI/NodeX.ai">open official repository</a>.\n\n<b>Your correspondence with the neural network model is securely encrypted with the AES-256-GCM algorithm and stored in the database</b> <a href="https://telegra.ph/Politika-konfidencialnosti-telegram-bota-NodeXai-11-01">(See Privacy Policy)</a>.\n\n<b>The Service is provided "as is" (AS IS). Full terms, including disclaimer and usage rules, are set out in the</b> <a href="https://telegra.ph/POLZOVATELSKOE-SOGLASHENIE-telegarm-bota-NodeXai-11-01">User Agreement</a> <b>and</b> <a href="https://telegra.ph/OGRANICHENIE-OTVETSTVENNOSTI-telegram-bota-NodeXai-11-01">Disclaimer Policy</a>.\n\n<b>You have the full right to delete your account and revoke accepted agreements using the "Danger Zone" section in the menu: /menu</b>',
         'faq' : '<b>You can find answers to frequently asked questions at <a href="https://telegra.ph/CHaVo--Telegram-bot-NodeXai-11-01">link</a></b>',
         'models' : '<b>List of available models:</b>\n • <b>GPT-5 mini</b> - <i>OpenAI\'s</i> next-generation, high-speed, and powerful compact model designed to solve complex problems with pinpoint accuracy in seconds.\n • <b>Grok 4 fast</b> - <i>Elon Musk\'s</i> high-speed language model optimized for fast, generative interactions.\n • <b>Gemini 3 Flash Preview</b> - <i>Google\'s</i> fastest, most efficient Gemini model, ideal for tasks that require near-instantaneous response while maintaining high intelligence.\n • <b>DeepSeek V3.2</b> - <i>DeepSeek\'s</i> latest and most advanced model, delivering exceptional insight, creativity, and advanced code and reasoning.',
+        
+        'prompt' : '<b>System prompt</b>\n\n<b>A prompt</b> is a \"text instruction\" for a neural network that sets the style of all responses.\n\n<b>How it works:</b>\n • Is added to all models\n • Affects the style of responses\n • Works with text and images\n• Does not replace, but complements the system settings of the models\n\nIf the prompt is not installed, the neural network responds as standard.',
+        'prompt_set' : '<b>Change the prompt</b>\n\n<b>Your current prompt:</b>{prompt}\n\n Edit the new text (max. 600 characters) or click the button below to cancel',
+        'long_prompt' : '<b>Your prompt is too long.</b> The maximum length of the prompt is 600 characters. The number of characters in your prompt: {length}. Try again or cancel the action.',
+        'new_prompt' : '<b>Your new prompt has been successfully installed</b>\nCurrent prompt: {prompt}',
+        'cancel_prompt' : '<b>The prompt change has been canceled</b>',
+        'prompt_templates' : '<b>Product templates</b>\n\nReady-made settings N​o​d​e​X.​a​i for different tasks. Select it, and the neural network will immediately start working in this mode.',
+        'prompt_template_message' : '<b>Prompt \"{name}\"</b>\n\n<b>Description:</b> {desc}\n\n<b>Prompt text:</b> {text}',
+        'prompt_guide' : 'You can find a guide on writing a prompt at <a href="https://telegra.ph/Rukovodstvo-po-sostavleniyu-sistemnyh-promptov-NodeXai-01-11">link</a>',
+
         'new_model' : '<b>The text model has been successfully changed to {new_model}</b>',
         'menu' : '<b>Menu:</b>',
         'help' : '<b>Help</b>\n\n<b>To the left of the message input field, you have a list of available commands:</b>\n /start - Registration, if you are not registered, you do not have access to the bot\'s functionality (if you are reading this, you are registered)\n /menu - Menu\n<b>In the menu, you can:</b>\n • Change the neural network (section \"Change text model\")\n • Get information about the project and the latest updates (sections \"Project Information\" and \"Project Change Log\")\n • Find out about available neural networks (section \"Available models\")\n • View your statistics and settings (section \"My profile\")\n • View global statistics (section \"Statistics\")\n • Read answers to frequently asked questions (section \"FAQ\")\n • Clear your message history or delete your account (all agreements are revoked along with the account) (section "Danger Zone")\n /support - Support the project\n /help - Help\n\n<b>All users have the Grok 4 fast neural network installed by default, but you can change it in the menu. To send a request to the neural network, simply write a text message.</b>',
@@ -47,9 +67,9 @@ MESSAGES = {
         'new_image_model' : '<b>The image recognition model has been successfully modified to:</b> {new_model}',
         'change_language' : '<b>Select a language:</b>',
         'new_language' : '<b>Language successfully changed to:</b> <i>{lang}</i>',
-        'my_profile' : '<b>Your profile</b>\n • <b>ID:</b> <tg-spoiler>{id}</tg-spoiler>\n • <b>Current text model:</b> <i>{current_model}</i>\n • <b>Current model for image recognition:</b> <i>{current_image_model}</i>\n • <b>Number of messages:</b> <i>{message_count}</i>\n • <b>Registered:</b> <i>{created_str}</i>\n • <b>Language:</b> <i>{lang}</i>',
+        'my_profile' : '<b>Your profile</b>\n • <b>ID:</b> <tg-spoiler>{id}</tg-spoiler>\n • <b>Current text model:</b> <i>{current_model}</i>\n • <b>Current model for image recognition:</b> <i>{current_image_model}</i>\n <b>Current prompt:</b> <i>{prompt}</i>\n • <b>Number of messages:</b> <i>{message_count}</i>\n • <b>Registered:</b> <i>{created_str}</i>\n • <b>Language:</b> <i>{lang}</i>',
         'statistics' : '<b>Global statistics:</b>\n • <b>Registered users:</b> {total_users}\n • <b>Total messages:</b> {total_messages}\n • <b>Popular model:</b> {popular_model}',
-        'changelog' : '<b>Recent Changelog</b>\n\n <b>Current version: v3.1 - 03.01.2026</b>\n  • Integration with S3 storage - replacing third-party hosting with your own storage\n  • Improved service stability - switching to S3 storage has reduced errors associated with uploading images to a minimum\n\n <b>Previous version: v3.0 - 02.01.2026</b>\n  • All image processing functions have been rewritten\n  • The project has switched to a more reliable image hosting\n  • Neural networks now support the history of the dialogue when sending images (this was not the case in our time)\n  • The process of uploading images to the hosting has been optimized\n  • All bugs from previous versions have been fixed\n\n <b>Follow the news:</b> @NodeX_project',
+        'changelog' : '<b>Recent changes log</b>\n\n <b>Current version: v3.2 - 11.01.2026</b>\n  • Added support for system promts\n  • Added 6 different prompt templates\n\n <b>Previous version: v3.1 - 03.01.2026</b>\n  • Integration with S3 storage - replacement of third-party hosting with its own storage\n  • Increased stability of the service - switching to S3 storage reduced errors related to uploading images to a minimum\n\n <b>Follow the news:</b> @NodeX_project',
         'friends' : '<b>Tell your friends</b>\n\n <b>Why is this important?</b>\n Each new registered user motivates me to develop this project further, and also helps make it better: new users can suggest an idea or find a bug, which is also very valuable.\n\n <b>How to share?</b>\n Click the button below and select your friends in Telegram.\n\n <b>Thank you for helping us develop the project!</b>',
         
         'danger_zone' : '<b>Danger zone. Be careful with your choices.</b>',
@@ -84,6 +104,73 @@ ERRORS = {
     }
 }
 
+PROMPTS = {
+    'ru' : {
+        'exams' : {
+            'name' : 'Подготовка к экзаменам',
+            'text' : 'Ты помогаешь готовиться к экзаменам. Давай сжатую, структурированную информацию по теме. Выделяй ключевые концепции, формулы, определения. Задавай контрольные вопросы. Фокусируйся на понимании, а не зазубривании.',
+            'description' : 'Структурированная информация, фокус на ключевых концепциях'
+        },
+        'corrector' : {
+            'name' : 'Корректор',
+            'text' : 'Ты — профессиональный корректор. Исправляй грамматические, орфографические, стилистические ошибки в текстах. Предлагай улучшения формулировок. Объясняй правила, если просят. Будь точным, но не придирчивым.',
+            'description' : 'Исправляет ошибки, улучшает стиль текста'
+        },
+        'brainstorm' : {
+            'name' : 'Мозговой штурм',
+            'text' : 'Ты — партнёр для мозгового штурма. Генерируй идеи свободно, без внутренней цензуры. Предлагай неочевидные варианты, комбинируй разные подходы. Не критикуй идеи на этапе генерации. \"Да, и...\" вместо \"нет, потому что...\".',
+            'description' : 'Генерирует идеи, предлагает неочевидные варианты, не критикует'
+        },
+        'detail' : {
+            'name' : 'Детальный анализ',
+            'text' : 'Объясняй подробно, как для новичка. Разбивай сложное на простые шаги. Приводи реальные примеры и аналогии. В конце спрашивай, понятно ли объяснение. Будь терпеливым.',
+            'description' : 'Разжёвывает сложное, приводит примеры, проверяет понимание'
+        },
+        'laconic' : {
+            'name' : 'Лаконичный',
+            'text' : 'Отвечай максимально кратко и по делу. Без лирических отступлений, эмоций, избыточных деталей. Структурируй ответ: если есть список — маркеры, если инструкция — шаги. Факты, цифры, конкретика.',
+            'description' : 'Отвечает по делу, без воды, структурированно'
+        },
+        'critical-thinking' : {
+            'name' : 'Критическое мышление',
+            'text' : 'Анализируй информацию критически: проверяй факты, ищи логические противоречия, задавай уточняющие вопросы. Указывай на допущения и ограничения. Не принимай утверждения на веру.',
+            'description' : 'Проверяет информацию, ищет противоречия, задаёт уточняющие вопросы'
+        }
+    },
+    'en' : {
+        'exams' : {
+            'name' : 'Exam preparation',
+            'text' : 'You\'re helping to prepare for exams. Give me concise, structured information on the topic. Highlight key concepts, formulas, and definitions. Ask security questions. Focus on understanding, not memorizing.',
+            'description' : 'Structured information, focus on key concepts'
+        },
+        'corrector' : {
+            'name' : 'Corrector',
+            'text' : 'You\'re a professional proofreader. Correct grammatical, spelling, and stylistic errors in texts. Suggest improvements to the wording. Explain the rules if asked. Be precise, but don\'t be picky.',
+            'description' : 'Corrects errors, improves text style'
+        },
+        'brainstorm' : {
+            'name' : 'Brainstorm',
+            'text' : 'You\'re a brainstorming partner. Generate ideas freely, without internal censorship. Suggest non-obvious options, combine different approaches. Don\'t criticize ideas at the generation stage. \"Yes, and...\" instead of \"no, because...\".',
+            'description' : 'Generates ideas, offers non-obvious options, does not criticize'
+        },
+        'detail' : {
+            'name' : 'Detailed analysis',
+            'text' : 'Explain in detail, as for a beginner. Break down the difficult into simple steps. Give real examples and analogies. At the end, ask if the explanation is clear. Be patient.',
+            'description' : 'He chews through the difficult, gives examples, and checks for understanding'
+        },
+        'laconic' : {
+            'name' : 'Laconic',
+            'text' : 'Answer as briefly and to the point as possible. Without lyrical digressions, emotions, or redundant details. Structure your answer: if there is a list, then there are markers; if there is an instruction, then there are steps. Facts, figures, specifics.',
+            'description' : 'Responds to the case, without water, in a structured manner'
+        },
+        'critical-thinking' : {
+            'name' : 'Critical thinking',
+            'text' : 'Analyze the information critically: check the facts, look for logical contradictions, ask clarifying questions. Point out the assumptions and limitations. Don\'t take the statements for granted.',
+            'description' : 'Checks information, looks for contradictions, asks clarifying questions'
+        }
+    }
+}
+
 def get_warn(warn_key: str, **kwargs) -> str:
     language = 'ru'
     text = WARNINGS[language][warn_key]
@@ -97,3 +184,10 @@ def get_error(error_key: str, **kwargs) -> str:
 def get_text(text_key: str, language: str, **kwargs) -> str:
     text = MESSAGES[language][text_key]
     return text.format(**kwargs) if kwargs else text
+
+def get_prompt(category: str, prompt_key: str, language: str) -> str:
+    text = PROMPTS[language][prompt_key][category]
+    return text
+
+def get_prompt_all(prompt_key: str, language: str):
+    return PROMPTS[language][prompt_key]['name'], PROMPTS[language][prompt_key]['text'], PROMPTS[language][prompt_key]['description']
